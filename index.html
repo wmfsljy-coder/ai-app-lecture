@@ -7,8 +7,8 @@
 <title>AI로 학교 앱 만들기 · 2시간 강의안</title>
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <style>
-:root{--bg:#f6f7fb;--card:#fff;--ink:#16181d;--sub:#4b5263;--mute:#7a8193;--line:#e3e6ee;--acc:#4f46e5;--acc2:#0ea5e9;--ok:#059669;--bad:#dc2626;--warn:#d97706;--soft:#eef0ff;--code:#0f172a;--codeink:#e2e8f0;--r:16px}
-@media (prefers-color-scheme:dark){:root{--bg:#0f1117;--card:#181b24;--ink:#eef0f6;--sub:#b6bccb;--mute:#8a91a3;--line:#2a2f3c;--acc:#8b85ff;--acc2:#38bdf8;--ok:#34d399;--bad:#f87171;--warn:#fbbf24;--soft:#22243a;--code:#0b0e15;--codeink:#dbe3f0}}
+:root{--bg:#f6f7fb;--card:#fff;--ink:#16181d;--sub:#4b5263;--mute:#646b7d;--line:#e3e6ee;--acc:#4f46e5;--accbg:#4f46e5;--acc2:#0ea5e9;--ok:#059669;--bad:#dc2626;--warn:#d97706;--soft:#eef0ff;--code:#0f172a;--codeink:#e2e8f0;--r:16px}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1117;--card:#181b24;--ink:#eef0f6;--sub:#b6bccb;--mute:#9aa1b3;--line:#2a2f3c;--acc:#a5a0ff;--accbg:#5149e0;--acc2:#38bdf8;--ok:#34d399;--bad:#f87171;--warn:#fbbf24;--soft:#22243a;--code:#0b0e15;--codeink:#dbe3f0}}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:120px}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 "Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;word-break:keep-all;overflow-wrap:anywhere}
@@ -21,7 +21,7 @@ header.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--b
 .brand .by{color:var(--mute);font-size:13px}
 .tabs{display:flex;gap:8px;margin-top:10px;overflow-x:auto;padding-bottom:2px}
 .tab{flex:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:700;font-size:16px;padding:10px 18px;border-radius:999px;cursor:pointer;min-height:46px}
-.tab[aria-selected=true]{background:var(--acc);border-color:var(--acc);color:#fff}
+.tab[aria-current=page]{background:var(--accbg);border-color:var(--accbg);color:#fff}
 section.view{display:none;padding-top:22px}
 section.view.on{display:block}
 h2{font-size:26px;letter-spacing:-.5px;margin:6px 0 6px}
@@ -71,16 +71,16 @@ th{color:var(--sub);font-weight:700;background:color-mix(in srgb,var(--soft) 60%
 .say{border-left:4px solid var(--acc2);padding:6px 12px;margin:8px 0;background:color-mix(in srgb,var(--acc2) 8%,transparent);border-radius:0 10px 10px 0;font-size:15px}
 .lab{border:2px dashed color-mix(in srgb,var(--acc) 45%,transparent);border-radius:14px;padding:14px 16px;margin:12px 0;background:var(--card)}
 .lab>.lab-t{font-weight:800;color:var(--acc);margin-bottom:6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.lab-t .tag{font-size:12px;font-weight:800;background:var(--acc);color:#fff;border-radius:6px;padding:2px 8px}
+.lab-t .tag{font-size:12px;font-weight:800;background:var(--accbg);color:#fff;border-radius:6px;padding:2px 8px}
 /* 버튼 */
 .btn{border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:700;padding:10px 16px;border-radius:12px;cursor:pointer;min-height:44px}
 .btn:hover{border-color:var(--acc)}
-.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn.pri{background:var(--accbg);border-color:var(--accbg);color:#fff}
 .btn.sm{padding:6px 12px;min-height:36px;font-size:14px}
 .btn:disabled{opacity:.5;cursor:default}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
 .chip{border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:15px;padding:9px 15px;border-radius:999px;cursor:pointer;min-height:42px}
-.chip[aria-pressed=true]{background:var(--acc);border-color:var(--acc);color:#fff}
+.chip[aria-pressed=true]{background:var(--accbg);border-color:var(--accbg);color:#fff}
 .seg{display:inline-flex;gap:8px;flex-wrap:wrap;margin:4px 0 8px}
 label.f{display:block;font-weight:700;font-size:14.5px;margin:10px 0 4px}
 input.in,textarea.in{width:100%;font:inherit;font-size:16px;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
@@ -145,11 +145,11 @@ textarea.in{min-height:90px;resize:vertical}
       <h1>AI로 학교 앱 만들기 · 2시간 강의안</h1>
       <span class="by">웅천고 이정용 · 1년 동안 직접 만든 업무·수업 앱 경험 바탕</span>
     </div>
-    <nav class="tabs" role="tablist" aria-label="보기">
-      <button class="tab" role="tab" data-v="overview">한눈에 보기</button>
-      <button class="tab" role="tab" data-v="beginner">초보자 2시간</button>
-      <button class="tab" role="tab" data-v="intermediate">중급자 2시간</button>
-      <button class="tab" role="tab" data-v="res">자료·명령어</button>
+    <nav class="tabs" aria-label="보기 고르기">
+      <button class="tab" type="button" data-v="overview">한눈에 보기</button>
+      <button class="tab" type="button" data-v="beginner">초보자 2시간</button>
+      <button class="tab" type="button" data-v="intermediate">중급자 2시간</button>
+      <button class="tab" type="button" data-v="res">자료·명령어</button>
     </nav>
   </div>
 </header>
@@ -205,7 +205,7 @@ textarea.in{min-height:90px;resize:vertical}
       <li>참가자 수 x 2장 '내 업무 찾기' 쪽지(또는 이 페이지 마지막 단계)</li>
     </ul></div>
     <div class="card"><h4>중급자 과정</h4><ul class="tight">
-      <li>참가자 GitHub 계정, git, Node.js 설치 안내를 일주일 전에 보내기</li>
+      <li>일주일 전 안내: GitHub 계정, git·Node.js·GitHub CLI(gh) 설치, <code>gh auth login</code>, <code>git config --global user.name/user.email</code>, Claude Code 또는 Codex 로그인까지 미리</li>
       <li>일부러 버그를 넣은 연습 저장소 하나(실습 5)</li>
       <li>내 실제 운영 사례 화면: 작업일지, 검수 결과, 전환 체크리스트</li>
       <li>코딩 에이전트 유료 구독이 없는 참가자를 위한 짝 활동 계획</li>
@@ -275,10 +275,10 @@ textarea.in{min-height:90px;resize:vertical}
     <div class="tm" id="barTime">0:00:00<small>/ 2:00:00 진행</small></div>
     <div class="now-t" id="barNow"><b>시작 전</b>시작을 누르면 지금 단계가 표시돼요</div>
     <div class="ctl">
-      <button class="btn sm" id="barPrev" type="button">이전 단계</button>
+      <button class="btn sm" id="barPrev" type="button">이전</button>
       <button class="btn sm pri" id="barPlay" type="button">시작</button>
-      <button class="btn sm" id="barNext" type="button">다음 단계</button>
-      <button class="btn sm" id="barReset" type="button">처음으로</button>
+      <button class="btn sm" id="barNext" type="button">다음</button>
+      <button class="btn sm" id="barReset" type="button">처음</button>
     </div>
   </div>
 </div>
@@ -295,7 +295,16 @@ function $(s, r) { return (r || document).querySelector(s); }
 function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
 function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
 var store = {
-  get: function (k, d) { try { var v = localStorage.getItem("lec-" + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+  /* 저장된 값의 모양이 기본값과 다르면(배열/객체/글자) 기본값으로 */
+  get: function (k, d) {
+    try {
+      var s = localStorage.getItem("lec-" + k); if (s === null) return d;
+      var v = JSON.parse(s);
+      if (Array.isArray(d)) return Array.isArray(v) ? v : d;
+      if (d && typeof d === "object") return v && typeof v === "object" && !Array.isArray(v) ? v : d;
+      return typeof v === typeof d ? v : d;
+    } catch (e) { return d; }
+  },
   set: function (k, v) { try { localStorage.setItem("lec-" + k, JSON.stringify(v)); } catch (e) {} }
 };
 var toastT;
@@ -397,7 +406,8 @@ function bytesDemo() {
   return '<div data-bytes>' +
     '<div class="seg">' + chips("bt", ["교과세특 1500", "행동특성 900", "진로 1500"], false, "교과세특 1500") + '</div>' +
     '<textarea class="in" data-bytes-in placeholder="여기에 글을 붙여 넣어 보세요. (학생 이름은 빼고)">판 구조론 수업에서 대서양 중앙 해령의 고지자기 줄무늬 자료를 분석하여 해저 확장의 증거를 설명함.</textarea>' +
-    '<div class="meter"><span data-bytes-bar style="width:0"></span></div><p data-bytes-out class="small"></p></div>';
+    '<div class="meter"><span data-bytes-bar style="width:0"></span></div><p data-bytes-out class="small"></p>' +
+    '<p class="small muted">고등학교 2026 기재요령 기준 분량. 한글 3바이트, 영문·숫자·공백 1바이트. 기재요령은 줄바꿈을 1바이트로 세지만 여기서는 넉넉하게 2바이트로 셈니다.</p></div>';
 }
 function updBytes(root) {
   var t = $("[data-bytes-in]", root).value, b = neisBytes(t), n = Array.from(t.replace(/\n/g, "")).length;
@@ -419,6 +429,7 @@ function runGroup(root) {
   var abs = {}; $("[data-group-abs]", root).value.split(/[,\s]+/).forEach(function (x) { if (x) abs[+x] = 1; });
   var a = []; for (var i = 1; i <= n; i++) if (!abs[i]) a.push(i);
   for (var k = a.length - 1; k > 0; k--) { var r = Math.floor(Math.random() * (k + 1)), t = a[k]; a[k] = a[r]; a[r] = t; }
+  if (!a.length) { $("[data-group-out]", root).innerHTML = "<div>참석 학생이 없어요</div>"; return; }
   var g = Math.max(1, Math.floor(a.length / size)), out = [];
   for (var j = 0; j < g; j++) out.push(a.slice(j * size, j * size + size));
   a.slice(g * size).forEach(function (x, idx) { out[idx % g].push(x); });
@@ -601,7 +612,7 @@ function buildClaude(root) {
 var P_REVIEW = "너는 깐깐한 검수자야. 파일은 절대 고치지 말고 읽기만 해.\n`git diff main...HEAD` 의 변경을 검수해 줘.\n\n볼 것:\nA. 이번 변경과 그로 인해 생긴 문제 (판정에 반영)\nB. 원래 코드에 있던 문제 (판정과 별도 목록)\n\n특히: 학생 개인정보가 화면·로그·저장소에 새는지, 비밀 값이 코드에 있는지, 권한 없는 사람이 남의 데이터를 읽거나 고칠 수 있는지, 시트 열 순서를 바꿨는지.\n\n각 문제마다 심각도(높음/중간/낮음), 파일:줄, 근거, 고칠 방법을 한국어로.\n확실히 문제없다고 말할 수 없으면 불통과로 해.\n마지막 줄은 반드시 `판정: 통과` 또는 `판정: 불통과`.";
 var BUGS = [
   { q: "Next.js 화면 코드에 이렇게 적혀 있다.\nconst supabase = createClient(URL, \"service_role 키 eyJhbGci...\")", o: ["문제없음: 키가 길어서 못 외움", "높음: 모든 권한 열쇠가 누구나 보는 화면 코드에 있음", "낮음: 변수 이름만 바꾸면 됨"], a: 1, w: "service_role 키는 모든 권한(RLS 무시) 열쇠입니다. 화면 코드에는 공개(anon) 키만, service_role은 Vercel 환경 변수와 서버 코드에만. 이미 올라갔다면 키를 새로 발급해 바꿉니다." },
-  { q: "Supabase에 학생 표를 만들었다.\ncreate table yaja.students (id int, name text, grade int);\n(그 뒤 다른 설정 없음)", o: ["문제없음: 로그인한 사람만 앱을 씀", "높음: RLS(행 권한)를 켜지 않아 공개 키로 누구나 읽을 수 있음", "중간: 열 이름이 영어라서"], a: 1, w: "표를 만들 때마다 `alter table ... enable row level security;` 후 필요한 줄만 열어 줍니다. 배포 전에 로그아웃 상태로 직접 읽어 보는 시험을 합니다." },
+  { q: "Supabase에 학생 표를 만들었다. (yaja 스키마는 API에 열어 두었고, 공개 키 역할(anon)에 읽기 권한을 주었다)\ncreate table yaja.students (id int, name text, grade int);\n(그 뒤 다른 설정 없음)", o: ["문제없음: 로그인한 사람만 앱을 씀", "높음: RLS(행 권한)를 켜지 않아 공개 키로 누구나 읽을 수 있음", "중간: 열 이름이 영어라서"], a: 1, w: "표를 만들 때마다 `alter table ... enable row level security;` 후 필요한 줄만 열어 줍니다. 배포 전에 로그아웃 상태로 직접 읽어 보는 시험을 합니다." },
   { q: "앱스스크립트 웹앱의 doGet:\nif (e.parameter.p === 'admin') return 관리화면();  // 학생 명단 수정·삭제 가능", o: ["높음: 주소만 알면 누구나 관리 화면에 들어옴", "문제없음: 주소를 알려 주지 않으면 됨", "낮음: 화면 글씨만 고치면 됨"], a: 0, w: "관리 화면은 비밀번호(해시 비교)나 Session.getActiveUser() 이메일 허용 명단으로 막습니다. 실제 연수 등록부 첫 판에서 검수로 나온 지적입니다." }
 ];
 
@@ -650,7 +661,8 @@ function renderMap(root) {
 }
 
 /* ================= 강의 단계 데이터 ================= */
-var COLORS = ["#4f46e5", "#0ea5e9", "#10b981", "#94a3b8", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"];
+var COLORS = ["#4f46e5", "#0369a1", "#047857", "#b45309", "#b91c1c", "#6d28d9", "#be185d", "#0f766e"]; /* 흰 글씨 대비 4.5:1 이상 */
+var BRK = "#64748b";
 var TRACKS = {
   beginner: {
     title: "초보자 2시간: 오늘 하나 만들어 간다",
@@ -743,9 +755,10 @@ var TRACKS = {
         do: ["4종 세트 설명: 앱 하나 = 폴더 하나 / git·GitHub 비공개 저장소 / CLAUDE.md / 문서/작업일지.md", "한 바퀴 시연: git pull --rebase → 에이전트에게 지시 → 직접 열어 확인 → 커밋·푸시 → 일지 한 단락", "실습 A로 자기 앱의 CLAUDE.md를 만든다", "실습 B: 예제 수업 페이지 폴더에서 에이전트에게 기능 하나를 시키고 GitHub Pages로 올린다"],
         lab: function () {
           return lab("A. CLAUDE.md 만들기 도우미", claudeHtml()) +
-            lab("B. 수업 페이지 하나를 에이전트로 만들고 올리기", '<ol class="steps"><li>빈 폴더를 만들고 그 폴더에서 터미널을 연다</li><li>위에서 만든 CLAUDE.md를 폴더에 저장 (방식: 정적 사이트, 배포: GitHub Pages)</li><li><code>claude</code> 실행 후 아래 지시를 붙여 넣는다</li><li>브라우저로 index.html을 직접 열어 확인 → 이상하면 그대로 말하기</li><li>아래 명령으로 저장소를 만들고 Pages를 켠다</li></ol>' +
-              codeBlock("CLAUDE.md를 먼저 읽어 줘.\n지구시스템과학 '판 구조론' 단원의 수업 첫 화면을 index.html 하나로 만들어 줘.\n- 위에서부터: 오늘의 질문 / 오개념 점검 O·X 3문항(누르면 풀이) / 판 경계 3종류 그림 카드 / 출구 질문\n- 휴대폰과 프로젝터 둘 다 보기 좋게, 큰 버튼\n- 바꾸면 안 되는 것: 외부 서버에 학생 입력을 보내지 말 것\n- 끝나면 무엇을 만들었는지, 직접 어떻게 확인했는지 3줄로 보고하고 커밋해 줘", "에이전트에게 줄 첫 지시") +
-              codeBlock("git init\ngit add -A\ngit commit -m \"판 구조론 수업 첫 화면\"\ngh repo create plate-lesson --public --source . --push\ngh api -X POST repos/{owner}/plate-lesson/pages -f \"source[branch]=main\" -f \"source[path]=/\"\n# 1~2분 뒤: https://<내 아이디>.github.io/plate-lesson/", "올리기 (GitHub CLI)") +
+            lab("B. 수업 페이지 하나를 에이전트로 만들고 올리기", '<ol class="steps"><li>빈 폴더를 만들고 그 폴더에서 터미널을 연다</li><li>위에서 만든 CLAUDE.md를 폴더에 저장 (방식: 정적 사이트 → 배포는 자동으로 GitHub Pages)</li><li>아래 ① 명령으로 git을 시작하고 깃허브 저장소를 먼저 만든다 (이래야 CLAUDE.md의 <code>git pull --rebase</code>가 돌아감)</li><li><code>claude</code> 실행 후 ② 지시를 붙여 넣는다</li><li>브라우저로 index.html을 직접 열어 확인 → 이상하면 그대로 말하기</li><li>③ 명령으로 Pages를 켜고 1~2분 뒤 휴대폰으로 열기</li></ol>' +
+              codeBlock("git init -b main\ngit add -A\ngit commit -m \"시작: CLAUDE.md\"\ngh repo create plate-lesson --public --source . --push", "① 저장소 만들기 (처음 한 번)") +
+              codeBlock("CLAUDE.md를 먼저 읽어 줘.\n지구시스템과학 '판 구조론' 단원의 수업 첫 화면을 index.html 하나로 만들어 줘.\n- 위에서부터: 오늘의 질문 / 오개념 점검 O·X 3문항(누르면 풀이) / 판 경계 3종류 그림 카드 / 출구 질문\n- 휴대폰과 프로젝터 둘 다 보기 좋게, 큰 버튼\n- 바꾸면 안 되는 것: 외부 서버에 학생 입력을 보내지 말 것\n- 끝나면 무엇을 만들었는지, 직접 어떻게 확인했는지 3줄로 보고하고 커밋·푸시해 줘", "② 에이전트에게 줄 첫 지시 (끝나면 커밋·푸시까지)") +
+              codeBlock("gh api -X POST repos/{owner}/plate-lesson/pages -f \"source[branch]=main\" -f \"source[path]=/\"\n# 1~2분 뒤: https://<내 아이디>.github.io/plate-lesson/", "③ Pages 켜기 (처음 한 번, 이후엔 git push만 하면 자동 반영)") +
               '<p class="small muted">수업 자료라 공개 저장소로 올립니다. 학생 데이터가 들어가는 앱은 반드시 비공개 저장소.</p>');
         } },
       { min: 10, title: "쉬는 시간", brk: true,
@@ -782,14 +795,14 @@ var TRACKS = {
 function fmtClock(m) { return Math.floor(m / 60) + ":" + (m % 60 < 10 ? "0" : "") + (m % 60); }
 function renderTrack(key) {
   var t = TRACKS[key], acc = 0, total = t.steps.reduce(function (s, x) { return s + x.min; }, 0);
-  var tl = t.steps.map(function (s, i) { return '<span title="' + esc(s.title) + '" style="width:' + (s.min / total * 100) + '%;background:' + (s.brk ? "#cbd5e1" : COLORS[i % COLORS.length]) + '"></span>'; }).join("");
-  var lg = t.steps.map(function (s, i) { return '<span><i style="background:' + (s.brk ? "#cbd5e1" : COLORS[i % COLORS.length]) + '"></i>' + esc(s.title.split(":")[0]) + ' ' + s.min + '분</span>'; }).join("");
+  var tl = t.steps.map(function (s, i) { return '<span title="' + esc(s.title) + '" style="width:' + (s.min / total * 100) + '%;background:' + (s.brk ? BRK : COLORS[i % COLORS.length]) + '"></span>'; }).join("");
+  var lg = t.steps.map(function (s, i) { return '<span><i style="background:' + (s.brk ? BRK : COLORS[i % COLORS.length]) + '"></i>' + esc(s.title.split(":")[0]) + ' ' + s.min + '분</span>'; }).join("");
   var html = '<h2>' + esc(t.title) + '</h2><p class="lead">' + esc(t.lead) + '</p><div class="meta">' + t.pills.map(function (p) { return '<span class="pill">' + esc(p) + '</span>'; }).join("") + '<span class="pill ok">총 ' + total + '분</span></div>' +
     '<div class="timeline">' + tl + '</div><div class="tl-legend">' + lg + '</div>' +
     '<p class="noprint small muted" style="margin-top:10px">아래 \'강의 시계\'의 시작을 누르면 지금 해야 할 단계가 표시되고 따라 내려갑니다.</p>';
   t.steps.forEach(function (s, i) {
     var from = acc; acc += s.min;
-    var color = s.brk ? "#94a3b8" : COLORS[i % COLORS.length];
+    var color = s.brk ? BRK : COLORS[i % COLORS.length];
     html += '<article class="step" id="' + key + '-' + i + '" data-from="' + from + '" data-to="' + acc + '">' +
       '<div class="step-h"><div class="clock" style="background:' + color + '">' + fmtClock(from) + '<small>' + s.min + '분</small></div><div><h3>' + (i + 1) + '. ' + esc(s.title) + '</h3><p class="goal">' + esc(s.goal) + '</p></div></div><div class="step-b">';
     if (s.brk) { html += '<ul class="tight">' + (s.do || []).map(function (d) { return '<li>' + esc(d) + '</li>'; }).join("") + '</ul></div></article>'; return; }
@@ -818,7 +831,14 @@ function renderBank() {
 }
 
 /* ---------------- 위젯 연결 ---------------- */
+var LBL = 0;
 function initWidgets(root) {
+  /* 레이블과 입력칸·버튼 묶음을 연결 (화면 읽기 프로그램용) */
+  $$("label.f", root).forEach(function (l) {
+    var n = l.nextElementSibling; if (!n) return;
+    if (n.matches("input, textarea")) { if (!n.id) n.id = "fld-" + (++LBL); l.htmlFor = n.id; }
+    else if (n.matches("[data-chips]")) { n.setAttribute("role", "group"); n.setAttribute("aria-label", l.textContent); }
+  });
   $$("[data-bytes]", root).forEach(function (b) { updBytes(b); });
   $$("[data-webapp]", root).forEach(function (w) { renderWebapp(w); });
   $$("[data-check]", root).forEach(function (c) { updCheck(c); });
@@ -835,6 +855,10 @@ document.addEventListener("click", function (e) {
     if (multi) t.setAttribute("aria-pressed", t.getAttribute("aria-pressed") === "true" ? "false" : "true");
     else $$(".chip", box).forEach(function (c) { c.setAttribute("aria-pressed", c === t ? "true" : "false"); });
     var bw = t.closest("[data-bytes]"); if (bw) updBytes(bw);
+    if (box.getAttribute("data-chips") === "cm-kind") {
+      var dep = { "앱스스크립트": 0, "HTML 한 장": 1, "정적 사이트(GitHub Pages)": 1, "Next.js + Supabase + Vercel": 2 }[t.getAttribute("data-val")];
+      $$('[data-chips="cm-dep"] .chip', t.closest("[data-claude]")).forEach(function (c, i) { c.setAttribute("aria-pressed", i === dep ? "true" : "false"); });
+    }
     var ww = t.closest("[data-webapp]"); if (ww) renderWebapp(ww);
     return;
   }
@@ -864,7 +888,8 @@ document.addEventListener("click", function (e) {
   if (t.hasAttribute("data-map-del")) { var mp2 = t.closest("[data-map]"), rs = store.get("map", []); rs.splice(+t.getAttribute("data-map-del"), 1); store.set("map", rs); renderMap(mp2); return; }
   if (t.hasAttribute("data-map-copy")) {
     var rr = store.get("map", []); if (!rr.length) { toast("목록이 비어 있어요"); return; }
-    return copyText("앱 이름\t방식\t데이터\t백업\n" + rr.map(function (r) { return [r.name, r.kind, r.data, r.bk].join("\t"); }).join("\n"));
+    var cell = function (x) { var s = String(x || "").replace(/[\t\r\n]+/g, " ").trim(); return /^[=+\-@]/.test(s) ? "'" + s : s; };
+    return copyText("앱 이름\t방식\t데이터\t백업\n" + rr.map(function (r) { return [r.name, r.kind, r.data, r.bk].map(cell).join("\t"); }).join("\n"));
   }
 });
 document.addEventListener("input", function (e) {
@@ -880,7 +905,7 @@ function go(v, noScroll) {
   if (location.hash !== "#" + v) history.replaceState(null, "", "#" + v);
   cur = v;
   VIEWS.forEach(function (x) { $("#v-" + x).classList.toggle("on", x === v); });
-  $$(".tab").forEach(function (b) { b.setAttribute("aria-selected", b.getAttribute("data-v") === v ? "true" : "false"); });
+  $$(".tab").forEach(function (b) { if (b.getAttribute("data-v") === v) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
   $("#bar").classList.toggle("on", !!TRACKS[v]);
   if (TRACKS[v]) tick();
   if (!noScroll) window.scrollTo(0, 0);
@@ -889,8 +914,16 @@ $$(".tab").forEach(function (b) { b.addEventListener("click", function () { go(b
 window.addEventListener("hashchange", function () { go(location.hash.slice(1)); });
 
 /* ---------------- 강의 시계 (과정마다 따로 저장) ---------------- */
-function clk() { return store.get("clock-" + cur, { run: false, start: 0, acc: 0 }); }
-function setClk(c) { store.set("clock-" + cur, c); tick(); }
+/* 시계 상태는 메모리가 기준, localStorage는 새로고침 대비 복원용 */
+var CLOCKS = {};
+function clk() {
+  if (!CLOCKS[cur]) {
+    var c = store.get("clock-" + cur, {});
+    CLOCKS[cur] = { run: c.run === true, start: +c.start || 0, acc: +c.acc || 0 };
+  }
+  return CLOCKS[cur];
+}
+function setClk(c) { CLOCKS[cur] = c; store.set("clock-" + cur, c); tick(); }
 function elapsedMin(c) { var ms = c.acc + (c.run ? Date.now() - c.start : 0); return ms / 60000; }
 function hms(sec) { sec = Math.max(0, Math.floor(sec)); var h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s = sec % 60; return h + ":" + (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s; }
 var lastStep = -1;
