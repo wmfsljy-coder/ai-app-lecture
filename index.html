@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>AI로 학교 앱 만들기 · 2시간 강의안</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--ink:#16181d;--sub:#4b5263;--mute:#7a8193;--line:#e3e6ee;--acc:#4f46e5;--acc2:#0ea5e9;--ok:#059669;--bad:#dc2626;--warn:#d97706;--soft:#eef0ff;--code:#0f172a;--codeink:#e2e8f0;--r:16px}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1117;--card:#181b24;--ink:#eef0f6;--sub:#b6bccb;--mute:#8a91a3;--line:#2a2f3c;--acc:#8b85ff;--acc2:#38bdf8;--ok:#34d399;--bad:#f87171;--warn:#fbbf24;--soft:#22243a;--code:#0b0e15;--codeink:#dbe3f0}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:120px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 "Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;word-break:keep-all;overflow-wrap:anywhere}
+a{color:var(--acc)}
+.wrap{max-width:1040px;margin:0 auto;padding:0 18px 140px}
+header.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top-in{max-width:1040px;margin:0 auto;padding:12px 18px 10px}
+.brand{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.brand h1{font-size:19px;margin:0;letter-spacing:-.3px}
+.brand .by{color:var(--mute);font-size:13px}
+.tabs{display:flex;gap:8px;margin-top:10px;overflow-x:auto;padding-bottom:2px}
+.tab{flex:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:700;font-size:16px;padding:10px 18px;border-radius:999px;cursor:pointer;min-height:46px}
+.tab[aria-selected=true]{background:var(--acc);border-color:var(--acc);color:#fff}
+section.view{display:none;padding-top:22px}
+section.view.on{display:block}
+h2{font-size:26px;letter-spacing:-.5px;margin:6px 0 6px}
+h3{font-size:19px;margin:22px 0 8px}
+h4{font-size:16px;margin:14px 0 6px}
+.lead{color:var(--sub);font-size:17px;margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin:14px 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:760px){.grid2,.grid3{grid-template-columns:1fr}}
+.pill{display:inline-block;font-size:12.5px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--soft);color:var(--acc);margin:0 6px 6px 0}
+.pill.ok{background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)}
+.pill.warn{background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn)}
+.muted{color:var(--mute)}
+.small{font-size:14px}
+ul.tight{margin:6px 0;padding-left:20px}ul.tight li{margin:3px 0}
+ol.steps{margin:6px 0;padding-left:22px}ol.steps li{margin:6px 0}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{border-bottom:1px solid var(--line);padding:9px 8px;text-align:left;vertical-align:top}
+th{color:var(--sub);font-weight:700;background:color-mix(in srgb,var(--soft) 60%,transparent)}
+.tbl{overflow-x:auto}
+/* 지나온 길 */
+.road{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:8px}
+@media (max-width:900px){.road{grid-template-columns:repeat(2,1fr)}}
+.road .st{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;position:relative}
+.road .n{font-size:12px;font-weight:800;color:var(--acc)}
+.road b{display:block;margin:2px 0 4px;font-size:15.5px}
+.road p{margin:0;color:var(--sub);font-size:13.5px;line-height:1.5}
+/* 강의 단계 */
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 4px}
+.timeline{display:flex;height:16px;border-radius:999px;overflow:hidden;margin:14px 0 4px;border:1px solid var(--line)}
+.timeline span{display:block;height:100%}
+.tl-legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--sub)}
+.tl-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.step{background:var(--card);border:1px solid var(--line);border-radius:var(--r);margin:16px 0;overflow:hidden;transition:box-shadow .2s,border-color .2s}
+.step.now{border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 25%,transparent)}
+.step-h{display:flex;gap:14px;align-items:flex-start;padding:16px 20px 6px}
+.clock{flex:none;width:86px;text-align:center;border-radius:12px;padding:8px 4px;color:#fff;font-weight:800;line-height:1.25}
+.clock small{display:block;font-weight:600;font-size:12px;opacity:.9}
+.step-h h3{margin:2px 0 4px}
+.goal{margin:0;color:var(--sub)}
+.step-b{padding:4px 20px 18px}
+.cols{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}
+@media (max-width:760px){.cols{grid-template-columns:1fr}.clock{width:70px}}
+.box{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0;background:color-mix(in srgb,var(--soft) 35%,transparent)}
+.box h4{margin:0 0 6px;font-size:15px;color:var(--acc)}
+.say{border-left:4px solid var(--acc2);padding:6px 12px;margin:8px 0;background:color-mix(in srgb,var(--acc2) 8%,transparent);border-radius:0 10px 10px 0;font-size:15px}
+.lab{border:2px dashed color-mix(in srgb,var(--acc) 45%,transparent);border-radius:14px;padding:14px 16px;margin:12px 0;background:var(--card)}
+.lab>.lab-t{font-weight:800;color:var(--acc);margin-bottom:6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.lab-t .tag{font-size:12px;font-weight:800;background:var(--acc);color:#fff;border-radius:6px;padding:2px 8px}
+/* 버튼 */
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:700;padding:10px 16px;border-radius:12px;cursor:pointer;min-height:44px}
+.btn:hover{border-color:var(--acc)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn.sm{padding:6px 12px;min-height:36px;font-size:14px}
+.btn:disabled{opacity:.5;cursor:default}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:15px;padding:9px 15px;border-radius:999px;cursor:pointer;min-height:42px}
+.chip[aria-pressed=true]{background:var(--acc);border-color:var(--acc);color:#fff}
+.seg{display:inline-flex;gap:8px;flex-wrap:wrap;margin:4px 0 8px}
+label.f{display:block;font-weight:700;font-size:14.5px;margin:10px 0 4px}
+input.in,textarea.in{width:100%;font:inherit;font-size:16px;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+textarea.in{min-height:90px;resize:vertical}
+/* 코드 */
+.code{position:relative;margin:8px 0}
+.code pre{margin:0;background:var(--code);color:var(--codeink);border-radius:12px;padding:14px 14px;overflow:auto;font:13.5px/1.55 ui-monospace,"Cascadia Code",Consolas,monospace;max-height:420px;white-space:pre}
+.code .cp{position:absolute;top:8px;right:8px;background:#ffffff1f;color:#fff;border:1px solid #ffffff33}
+.code .nm{font-size:13px;font-weight:700;color:var(--sub);margin:0 0 4px}
+.out{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:14.5px;min-height:60px}
+/* 퀴즈 */
+.q{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0;background:var(--card)}
+.q p.qq{margin:0 0 8px;font-weight:700}
+.q .opts{display:flex;flex-wrap:wrap;gap:8px}
+.q .opt{border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:15px;padding:9px 14px;border-radius:10px;cursor:pointer;min-height:42px;text-align:left}
+.q .opt.right{background:color-mix(in srgb,var(--ok) 18%,transparent);border-color:var(--ok)}
+.q .opt.wrong{background:color-mix(in srgb,var(--bad) 14%,transparent);border-color:var(--bad)}
+.q .why{display:none;margin-top:8px;font-size:14.5px;color:var(--sub)}
+.q.done .why{display:block}
+.score{font-weight:800;color:var(--acc)}
+.reveal{margin:8px 0}
+.reveal .hid{display:none;margin-top:8px}
+.reveal.open .hid{display:block}
+.bad{color:var(--bad)}.ok{color:var(--ok)}
+.meter{height:12px;border-radius:999px;background:var(--line);overflow:hidden;margin:6px 0}
+.meter span{display:block;height:100%;background:var(--ok);transition:width .2s}
+.meter.over span{background:var(--bad)}
+.groups{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-top:8px}
+.groups div{border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--bg);font-size:15px}
+.groups b{color:var(--acc)}
+.chk{display:flex;gap:10px;align-items:flex-start;padding:8px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+.chk input{width:22px;height:22px;flex:none;margin-top:2px;accent-color:var(--acc)}
+.rows .row{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:8px 10px;border:1px solid var(--line);border-radius:10px;margin:6px 0;background:var(--bg)}
+.rows .del{border:0;background:none;color:var(--bad);font-weight:800;cursor:pointer;font-size:14px;padding:6px 8px}
+/* 강의 시계 */
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--card);border-top:1px solid var(--line);box-shadow:0 -8px 24px -18px rgba(0,0,0,.5);display:none}
+.bar.on{display:block}
+.bar-in{max-width:1040px;margin:0 auto;padding:10px 18px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.bar .tm{font:800 22px/1 ui-monospace,Consolas,monospace;min-width:150px}
+.bar .tm small{display:block;font-family:"Pretendard","Malgun Gothic",system-ui,sans-serif;font-size:12px;font-weight:600;line-height:1.4;color:var(--mute);margin-top:3px}
+.bar .now-t{flex:1;min-width:180px;font-size:14.5px}
+.bar .now-t b{display:block;font-size:15.5px}
+.bar .ctl{display:flex;gap:6px;flex-wrap:wrap}
+@media (max-width:600px){.brand .by{display:none}.tabs{scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tab{padding:8px 14px;min-height:42px;font-size:15px}.bar-in{padding:8px 12px;gap:6px 10px}.bar .tm{font-size:18px;min-width:0}.bar .tm small{display:none}.bar .now-t{order:3;flex-basis:100%;font-size:13px;min-width:0}.bar .now-t b{display:inline;font-size:13.5px;margin-right:6px}.bar .ctl{flex:1;justify-content:flex-end}.bar .ctl .btn{padding:6px 10px;min-height:38px;font-size:13.5px}}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:700;opacity:0;pointer-events:none;transition:.2s;z-index:40}
+.toast.on{opacity:1;transform:translateX(-50%)}
+.foot{color:var(--mute);font-size:13px;margin-top:30px;border-top:1px solid var(--line);padding-top:14px}
+@media print{
+  header.top,.bar,.cp,.toast,.noprint{display:none!important}
+  section.view{display:block!important;page-break-before:always}
+  body{background:#fff;color:#000}
+  .card,.step,.lab{break-inside:avoid-page;border-color:#bbb}
+  .code pre{max-height:none;white-space:pre-wrap;background:#f3f4f6;color:#111}
+  .reveal .hid,.q .why{display:block!important}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <h1>AI로 학교 앱 만들기 · 2시간 강의안</h1>
+      <span class="by">웅천고 이정용 · 1년 동안 직접 만든 업무·수업 앱 경험 바탕</span>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="보기">
+      <button class="tab" role="tab" data-v="overview">한눈에 보기</button>
+      <button class="tab" role="tab" data-v="beginner">초보자 2시간</button>
+      <button class="tab" role="tab" data-v="intermediate">중급자 2시간</button>
+      <button class="tab" role="tab" data-v="res">자료·명령어</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ===================== 한눈에 보기 ===================== -->
+<section class="view" id="v-overview">
+  <h2>선생님 대상 2시간 강의, 수준별로 이렇게 접근합니다</h2>
+  <p class="lead">핵심은 하나입니다. <b>코딩을 가르치지 않고, AI에게 "학교에서 필요한 것"을 정확히 말하는 법과 안전하게 쓰는 법을 가르친다.</b> 초보자는 "오늘 하나 만들어 간다", 중급자는 "만든 앱을 오래 안심하고 운영한다"가 목표입니다.</p>
+
+  <h3>제가 걸어온 길 (강의의 뼈대)</h3>
+  <div class="road">
+    <div class="st"><span class="n">1단계</span><b>채팅 AI로 글·문서</b><p>공문 초안, 안내문, 가정통신문, 수업 활동지</p></div>
+    <div class="st"><span class="n">2단계</span><b>HTML 한 장 도구</b><p>생기부 자동 생성기(나이스 바이트), 수행평가 채점 도우미</p></div>
+    <div class="st"><span class="n">3단계</span><b>시트 + 앱스스크립트</b><p>연구부 영수증 제출, 꾸러미 이수증, 연수 서명 등록부, 업무 흐름도</p></div>
+    <div class="st"><span class="n">4단계</span><b>깃허브 + 코딩 에이전트</b><p>과학 수업 허브 44단원, 웅천 서가(도서관 독서 프로그램)</p></div>
+    <div class="st"><span class="n">5단계</span><b>새 방식으로 옮기기</b><p>야자 도장판을 Next.js + Supabase + Vercel로 운영 중 전환</p></div>
+    <div class="st"><span class="n">6단계</span><b>여러 AI 한 팀 + 자동화</b><p>클로드가 만들고 코덱스가 검사, 브라우저 에이전트, 주소는 대시보드 한곳에</p></div>
+  </div>
+  <p class="small muted">초보자 과정은 1~3단계, 중급자 과정은 3~6단계를 다룹니다. 3단계(시트+앱스스크립트)가 두 과정을 잇는 다리입니다.</p>
+
+  <h3>두 과정 비교</h3>
+  <div class="card tbl">
+    <table>
+      <tr><th style="width:18%"></th><th>초보자</th><th>중급자</th></tr>
+      <tr><td><b>대상</b></td><td>AI 채팅은 써 봤지만 코딩은 처음인 선생님</td><td>앱스스크립트나 AI로 학교 도구를 하나 이상 만들어 본 선생님</td></tr>
+      <tr><td><b>2시간 뒤 모습</b></td><td>내 업무·수업 도구 1개를 <b>링크와 QR로 동료·학생에게 보낸다</b></td><td>코딩 에이전트로 앱을 고치고, <b>다른 AI에게 검사받고, 백업·권한까지 갖춘</b> 작업 흐름을 손에 쥔다</td></tr>
+      <tr><td><b>도구</b></td><td>AI 채팅(무료판도 됨), 구글 시트, 앱스스크립트. <b>설치 없음</b></td><td>Claude Code 또는 Codex, GitHub, GitHub Pages·Vercel, Supabase 맛보기</td></tr>
+      <tr><td><b>가르치는 방식</b></td><td>시연 → 같이 따라 하기 → 혼자 바꿔 보기 (보여 주고, 함께 하고, 맡긴다)</td><td>실패 사례 → 원칙 → 실습 → 체크리스트 (왜 그렇게 해야 하는지부터)</td></tr>
+      <tr><td><b>실습 결과물</b></td><td>나이스 바이트 계산기 또는 모둠 뽑기(HTML 한 장), 연수 출석 또는 수업 출구 카드(시트 웹앱)</td><td>CLAUDE.md(AI 작업 규칙서), 검수 지시문, 운영 전환 체크리스트, 내 앱 지도</td></tr>
+      <tr><td><b>핵심 메시지</b></td><td>"코딩이 아니라 주문서 쓰기다"</td><td>"만드는 건 AI가, 확인과 책임은 사람이. 확인은 AI 말이 아니라 직접 열어 보기로"</td></tr>
+      <tr><td><b>준비물</b></td><td>노트북, 구글 계정(학교 계정 권장), 휴대폰(QR 확인용)</td><td>노트북, GitHub 계정, Claude 또는 ChatGPT 유료 구독(코딩 에이전트용), Node.js·git 설치</td></tr>
+    </table>
+  </div>
+
+  <h3>두 과정 공통 진행 원칙</h3>
+  <div class="grid3">
+    <div class="card"><b>1. 결과부터 보여 준다</b><p class="small muted">첫 10분에 실제로 돌아가는 학교 앱을 휴대폰으로 직접 눌러 보게 한다. "나도 되겠다"가 먼저다.</p></div>
+    <div class="card"><b>2. 내 학교 일에서 시작</b><p class="small muted">예제는 전부 연수 출석, 생기부, 모둠 편성, 형성평가처럼 선생님이 이번 주에 하는 일로 고른다.</p></div>
+    <div class="card"><b>3. 작게 만들고 하나씩 더하기</b><p class="small muted">한 번에 다 시키지 않는다. 돌아가는 최소판을 만든 뒤 "이것도 해 줘"를 이어 붙인다.</p></div>
+    <div class="card"><b>4. 오류는 그대로 붙여 넣기</b><p class="small muted">빨간 글씨가 나오면 해석하려 하지 말고 화면 그대로 AI에게 붙여 넣는다. 오류는 실패가 아니라 다음 주문서다.</p></div>
+    <div class="card"><b>5. 학생 정보는 먼저 지킨다</b><p class="small muted">이름·학번은 AI 채팅에 넣지 않고, 공유 설정과 관리 화면 잠금을 매 실습 끝에 확인한다.</p></div>
+    <div class="card"><b>6. 무료 한도 안에서</b><p class="small muted">학교 도구는 무료 도구로 충분하다. 다만 한도와 쉬면 멈추는 규칙을 미리 알려 준다.</p></div>
+  </div>
+
+  <h3>강사가 준비할 것</h3>
+  <div class="grid2">
+    <div class="card"><h4>초보자 과정</h4><ul class="tight">
+      <li>시연용 앱 3개를 휴대폰 QR로 열 수 있게 준비(내 앱 주소 모음 대시보드)</li>
+      <li>실습 3 완성본을 미리 배포해 두고 QR 띄우기(참가자가 먼저 눌러 보게)</li>
+      <li>학교 와이파이에서 구글 앱스스크립트 접속 확인</li>
+      <li>참가자 수 x 2장 '내 업무 찾기' 쪽지(또는 이 페이지 마지막 단계)</li>
+    </ul></div>
+    <div class="card"><h4>중급자 과정</h4><ul class="tight">
+      <li>참가자 GitHub 계정, git, Node.js 설치 안내를 일주일 전에 보내기</li>
+      <li>일부러 버그를 넣은 연습 저장소 하나(실습 5)</li>
+      <li>내 실제 운영 사례 화면: 작업일지, 검수 결과, 전환 체크리스트</li>
+      <li>코딩 에이전트 유료 구독이 없는 참가자를 위한 짝 활동 계획</li>
+    </ul></div>
+  </div>
+  <p class="noprint"><button class="btn pri" data-go="beginner">초보자 2시간 보기</button> <button class="btn pri" data-go="intermediate">중급자 2시간 보기</button> <button class="btn" onclick="window.print()">전체 인쇄</button></p>
+</section>
+
+<!-- ===================== 초보자 ===================== -->
+<section class="view" id="v-beginner"></section>
+
+<!-- ===================== 중급자 ===================== -->
+<section class="view" id="v-intermediate"></section>
+
+<!-- ===================== 자료 ===================== -->
+<section class="view" id="v-res">
+  <h2>자료·명령어 모음</h2>
+  <p class="lead">강의 중에 띄워 두고 복사해 쓰는 쪽입니다. 기준일 2026-11-08 (무료 한도는 바뀔 수 있으니 강의 전에 다시 확인).</p>
+
+  <h3>주문서(프롬프트) 모음</h3>
+  <div id="promptBank"></div>
+
+  <h3>명령어 치트시트 (중급자)</h3>
+  <div class="card tbl"><table>
+    <tr><th style="width:42%">명령</th><th>뜻</th></tr>
+    <tr><td><code>git pull --rebase</code></td><td>시작 전에 깃허브의 최신본을 받아 온다. 다른 PC·다른 AI가 고친 것과 부딪히지 않게.</td></tr>
+    <tr><td><code>git add -A</code> → <code>git commit -m "무엇을 왜"</code></td><td>지금 상태를 기록(저장 지점). 잘못되면 여기로 되돌릴 수 있다.</td></tr>
+    <tr><td><code>git push</code></td><td>기록을 깃허브에 올린다. GitHub Pages·Vercel은 이걸 보고 자동 배포.</td></tr>
+    <tr><td><code>git log --oneline -5</code></td><td>최근 기록 5개 보기.</td></tr>
+    <tr><td><code>git revert &lt;번호&gt;</code></td><td>그 기록을 취소하는 새 기록을 만든다(안전한 되돌리기).</td></tr>
+    <tr><td><code>gh repo create 이름 --private --source . --push</code></td><td>지금 폴더로 깃허브 비공개 저장소를 만들고 올린다.</td></tr>
+    <tr><td><code>claude</code></td><td>그 폴더에서 Claude Code 시작. 첫 지시는 "CLAUDE.md를 읽고 시작해".</td></tr>
+    <tr><td><code>codex exec -s read-only "검수 지시"</code></td><td>코덱스를 읽기 전용으로 불러 검사만 시킨다(파일을 못 고침).</td></tr>
+    <tr><td><code>clasp push</code> → <code>clasp deploy -i &lt;배포ID&gt;</code></td><td>앱스스크립트를 내 PC에서 올리고, 같은 주소로 새 버전 배포.</td></tr>
+    <tr><td><code>npx vercel deploy --prod</code></td><td>Vercel에 정식 배포(Next.js 앱).</td></tr>
+  </table></div>
+
+  <h3>쉬운 말 용어 풀이</h3>
+  <div class="card tbl"><table>
+    <tr><th style="width:22%">말</th><th>쉬운 뜻</th></tr>
+    <tr><td>배포</td><td>내가 만든 것을 다른 사람이 주소로 열 수 있게 올리는 것</td></tr>
+    <tr><td>저장소</td><td>앱 하나의 코드와 바뀐 기록 전체를 담은 깃허브 폴더</td></tr>
+    <tr><td>커밋 / 푸시</td><td>저장 지점 만들기 / 그 저장 지점을 깃허브에 올리기</td></tr>
+    <tr><td>코딩 에이전트</td><td>내 PC 폴더의 파일을 직접 읽고 고치고 명령까지 실행하는 AI (Claude Code, Codex)</td></tr>
+    <tr><td>CLAUDE.md</td><td>그 폴더에서 일하는 AI가 맨 먼저 읽는 작업 규칙서</td></tr>
+    <tr><td>트리거</td><td>정해진 때(매일 7시, 시트를 고칠 때) 자동으로 돌아가게 거는 장치</td></tr>
+    <tr><td>환경 변수 / 스크립트 속성</td><td>열쇠·비밀번호처럼 화면 코드에 쓰면 안 되는 값을 따로 보관하는 칸</td></tr>
+    <tr><td>RLS (행 단위 권한)</td><td>표의 줄마다 "누가 읽고 고칠 수 있나"를 데이터베이스가 직접 막는 규칙</td></tr>
+    <tr><td>스키마</td><td>데이터베이스 안의 칸막이. 앱마다 칸을 나눠 한 무료 프로젝트에 여러 앱을 넣는다</td></tr>
+  </table></div>
+
+  <h3>무료 한도 (2026-11-08 기준)</h3>
+  <div class="card tbl"><table>
+    <tr><th style="width:24%">도구</th><th>알아 둘 한도</th><th style="width:30%">학교에서 쓰는 법</th></tr>
+    <tr><td>구글 앱스스크립트</td><td>하루 실행 시간·메일 발송 수·트리거 수에 한도가 있음. 한 번 실행은 최대 6분</td><td>수십 명이 쓰는 업무 도구, 시트·메일·드라이브 연동</td></tr>
+    <tr><td>GitHub Pages</td><td>공개 저장소면 무료. 저장할 데이터 없는 정적 페이지만</td><td>수업 자료 사이트, HTML 한 장 도구, 이 강의안</td></tr>
+    <tr><td>Supabase Free</td><td>DB 500MB, 전송 월 5GB, 켜 둘 프로젝트 2개, <b>1주일 사용이 적으면 일시정지</b>, <b>자동 백업 없음</b></td><td>프로젝트 하나에 앱별 스키마로 나눠 넣고, 백업은 직접</td></tr>
+    <tr><td>Vercel Hobby</td><td>비상업·개인 용도, 전송 월 100GB</td><td>학교 업무 도구 화면(판매 금지)</td></tr>
+  </table></div>
+</section>
+
+<p class="foot">이 강의안은 웅천고 이정용 선생님이 2025~2026년에 실제로 만들고 운영한 업무·수업 앱 경험을 바탕으로 정리했습니다. 실습 기록(체크·메모)은 이 기기 브라우저에만 저장되고 어디로도 보내지 않습니다. <a href="https://wmfsljy-coder.github.io/my-app-links/">내 앱 주소 모음</a></p>
+</main>
+
+<div class="bar" id="bar" aria-label="강의 시계">
+  <div class="bar-in">
+    <div class="tm" id="barTime">0:00:00<small>/ 2:00:00 진행</small></div>
+    <div class="now-t" id="barNow"><b>시작 전</b>시작을 누르면 지금 단계가 표시돼요</div>
+    <div class="ctl">
+      <button class="btn sm" id="barPrev" type="button">이전 단계</button>
+      <button class="btn sm pri" id="barPlay" type="button">시작</button>
+      <button class="btn sm" id="barNext" type="button">다음 단계</button>
+      <button class="btn sm" id="barReset" type="button">처음으로</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+var DASH = "https://wmfsljy-coder.github.io/my-app-links/";
+var GH = "https://wmfsljy-coder.github.io/";
+var SC = "<" + "/script>";
+
+/* ---------------- 작은 도구 ---------------- */
+function $(s, r) { return (r || document).querySelector(s); }
+function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+var store = {
+  get: function (k, d) { try { var v = localStorage.getItem("lec-" + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set: function (k, v) { try { localStorage.setItem("lec-" + k, JSON.stringify(v)); } catch (e) {} }
+};
+var toastT;
+function toast(m) { var t = $("#toast"); t.textContent = m; t.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(function () { t.classList.remove("on"); }, 1600); }
+function copyText(text) {
+  function fallback() {
+    var ta = document.createElement("textarea"); ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    var ok = false; try { ok = document.execCommand("copy"); } catch (e) {}
+    document.body.removeChild(ta); toast(ok ? "복사했어요" : "복사가 안 됐어요. 직접 골라 복사해 주세요");
+  }
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(function () { toast("복사했어요"); }, fallback);
+  else fallback();
+}
+var CODES = [];
+function codeBlock(text, name) {
+  var i = CODES.push(text) - 1;
+  return '<div class="code">' + (name ? '<p class="nm">' + esc(name) + '</p>' : '') +
+    '<button class="btn sm cp" type="button" data-copy="' + i + '">복사</button><pre>' + esc(text) + '</pre></div>';
+}
+function lab(title, body, tag) { return '<div class="lab"><div class="lab-t"><span class="tag">' + (tag || "실습") + '</span>' + esc(title) + '</div>' + body + '</div>'; }
+function reveal(btn, hidden) { return '<div class="reveal"><button class="btn sm" type="button" data-reveal data-label="' + esc(btn) + '">' + esc(btn) + '</button><div class="hid">' + hidden + '</div></div>'; }
+function chips(group, list, multi, sel) {
+  return '<div class="chips" data-chips="' + group + '"' + (multi ? ' data-multi="1"' : '') + '>' + list.map(function (c) {
+    var on = Array.isArray(sel) ? sel.indexOf(c) >= 0 : sel === c;
+    return '<button type="button" class="chip" aria-pressed="' + on + '" data-val="' + esc(c) + '">' + esc(c) + '</button>';
+  }).join("") + '</div>';
+}
+function chipVals(root, group) { return $$('[data-chips="' + group + '"] .chip[aria-pressed=true]', root).map(function (b) { return b.getAttribute("data-val"); }); }
+
+/* 퀴즈: [{q, o:[...], a:정답번호, w:"풀이"}] */
+var QUIZ = {};
+function quiz(id, items) {
+  QUIZ[id] = items;
+  return '<div data-quiz="' + id + '">' + items.map(function (it, i) {
+    return '<div class="q" data-i="' + i + '"><p class="qq">' + (i + 1) + '. ' + esc(it.q) + '</p><div class="opts">' +
+      it.o.map(function (o, j) { return '<button type="button" class="opt" data-j="' + j + '">' + esc(o) + '</button>'; }).join("") +
+      '</div><div class="why">' + it.w + '</div></div>';
+  }).join("") + '<p class="score" data-score></p></div>';
+}
+
+/* ---------------- 초보자 실습 1: 오늘의 약속 ---------------- */
+var PROMISE = '<div class="grid3">' +
+  '<div class="box"><h4>약속 1. 완벽 말고 작동</h4>예쁘게는 나중에. 먼저 눌러서 돌아가면 성공입니다.</div>' +
+  '<div class="box"><h4>약속 2. 오류는 그대로 붙여 넣기</h4>빨간 글씨는 해석하지 말고 통째로 복사해 AI에게 "이렇게 나와"라고 보냅니다.</div>' +
+  '<div class="box"><h4>약속 3. 학생 정보는 넣지 않기</h4>이름·학번 대신 "학생A", "3번"으로 바꿔서 AI와 이야기합니다.</div></div>';
+
+/* ---------------- 초보자 실습 2: 나쁜 주문 고치기 ---------------- */
+var BADGOOD = [
+  { bad: "출석 체크 앱 만들어 줘",
+    good: "교내 연수 때 선생님 30명이 휴대폰으로 출석하는 웹 페이지를 만들어 줘.\n- 입력: 이름, 부서(교무·연구·학생·교과·행정 중 큰 버튼으로 고르기)\n- 결과: 구글 시트에 시각·이름·부서가 한 줄씩 쌓임\n- 꼭 지킬 것: 같은 이름이 두 번 들어오면 알려 주기, 휴대폰 화면에 맞게\n- 나는 코딩을 모르니 붙여 넣을 곳과 순서를 번호로 알려 줘" },
+  { bad: "모둠 짜 주는 거",
+    good: "과학 수업에서 28명을 4명씩 무작위 모둠으로 나누는 HTML 한 장짜리 도구를 만들어 줘.\n- 입력: 학생 수, 모둠 인원(3·4·5명 큰 버튼)\n- 결과: '1모둠: 3, 17, 22, 9번'처럼 번호로 표시, 다시 섞기 버튼\n- 꼭 지킬 것: 이름 대신 번호만, 남는 학생은 앞 모둠에 한 명씩 더하기\n- 프로젝터로 띄울 거라 글씨를 크게" },
+  { bad: "세특 써 줘",
+    good: "통합과학 수행평가 소감문을 바탕으로 교과 세특 초안을 써 줘.\n- 입력: 아래 소감문(학생 이름은 지웠음)\n- 결과: 500자(1,500바이트) 안, 두 문단, '~함', '~임'으로 끝나는 문체\n- 꼭 지킬 것: 소감문에 없는 활동·수치는 만들지 말 것, 과목 개념(예: 판 구조론)과 이어서\n- 마지막에 바이트 수를 세지 말고 본문만" }
+];
+function badGoodHtml() {
+  return BADGOOD.map(function (x, i) {
+    return '<div class="box"><b class="bad">대충 쓴 주문 ' + (i + 1) + ':</b> "' + esc(x.bad) + '"' +
+      reveal("주문서로 고친 모습 보기", codeBlock(x.good)) + '</div>';
+  }).join("");
+}
+
+/* ---------------- 초보자 실습 2-B: 주문서 만들기 도우미 ---------------- */
+function orderHtml(id) {
+  return '<div data-order="' + id + '">' +
+    '<label class="f">무엇을 만들까요? (한 줄)</label><input class="in" data-k="what" placeholder="예: 연수 때 선생님들이 휴대폰으로 출석하는 페이지">' +
+    '<label class="f">누가 쓰나요?</label>' + chips(id + "-who", ["선생님", "학생", "학부모", "나만"], true, ["선생님"]) +
+    '<label class="f">무엇을 넣나요? (입력)</label><input class="in" data-k="in" placeholder="예: 이름, 부서, 한마디">' +
+    '<label class="f">무엇이 나와야 하나요? (결과)</label><input class="in" data-k="out" placeholder="예: 구글 시트에 한 줄씩 쌓임">' +
+    '<label class="f">어떤 형태로 만들까요?</label>' + chips(id + "-kind", ["HTML 한 장", "구글 시트 + 앱스스크립트 웹앱", "AI가 골라 줘"], false, "AI가 골라 줘") +
+    '<label class="f">화면 모양</label>' + chips(id + "-look", ["휴대폰 우선", "큰 버튼으로 고르기", "프로젝터용 큰 글씨", "A4 인쇄용"], true, ["휴대폰 우선", "큰 버튼으로 고르기"]) +
+    '<label class="f">꼭 지킬 것</label>' + chips(id + "-must", ["학생 이름 대신 번호", "같은 사람이 두 번 내면 알려 주기", "관리 화면은 비밀번호", "무료 도구만"], true, ["무료 도구만"]) +
+    '<p style="margin-top:12px"><button class="btn pri" type="button" data-make-order>주문서 만들기</button> <button class="btn" type="button" data-copy-order>복사</button></p>' +
+    '<div class="out" data-order-out>위 칸을 채우고 \'주문서 만들기\'를 누르세요.</div></div>';
+}
+function buildOrder(root) {
+  var id = root.getAttribute("data-order");
+  function v(k) { var el = $('[data-k="' + k + '"]', root); return el ? el.value.trim() : ""; }
+  var kind = chipVals(root, id + "-kind")[0] || "AI가 골라 줘";
+  var lines = [];
+  lines.push((v("what") || "(만들 것을 한 줄로)") + "을(를) 만들어 줘.");
+  lines.push("- 쓰는 사람: " + (chipVals(root, id + "-who").join(", ") || "선생님"));
+  lines.push("- 입력: " + (v("in") || "(무엇을 넣는지)"));
+  lines.push("- 결과: " + (v("out") || "(무엇이 나오는지)"));
+  lines.push("- 형태: " + (kind === "AI가 골라 줘" ? "HTML 한 장과 구글 시트 + 앱스스크립트 중 알맞은 것을 골라 이유와 함께 알려 줘" : kind));
+  var look = chipVals(root, id + "-look"); if (look.length) lines.push("- 화면: " + look.join(", ") + " (드롭다운 대신 탭하는 버튼)");
+  var must = chipVals(root, id + "-must"); if (must.length) lines.push("- 꼭 지킬 것: " + must.join(", "));
+  lines.push("- 나는 코딩을 모르는 교사야. 붙여 넣을 곳과 순서를 번호로, 화면에서 누를 메뉴 이름 그대로 알려 줘.");
+  lines.push("- 먼저 가장 작게 돌아가는 판을 만들고, 더할 만한 기능 3가지를 끝에 제안해 줘.");
+  return lines.join("\n");
+}
+
+/* ---------------- 초보자 실습 3: HTML 한 장 (업무 = 바이트 계산기 / 수업 = 모둠 뽑기) ---------------- */
+var P_BYTES = "나이스 생활기록부에 붙여 넣을 글의 바이트를 세는 HTML 한 장짜리 도구를 만들어 줘.\n- 큰 입력 칸에 글을 붙여 넣으면 바로 글자 수와 바이트 수를 보여 줘\n- 한글 1자 = 3바이트, 영문·숫자·공백 = 1바이트, 줄바꿈은 넉넉하게 2바이트\n- 목표를 큰 버튼으로 고르기: 교과세특 1,500바이트 / 행동특성 900바이트 / 직접 입력\n- 목표를 넘으면 막대와 숫자를 빨간색으로\n- 인터넷 없이도 돌아가게 파일 하나로, 설명은 한국어로";
+var P_GROUP = "과학 수업에서 쓰는 무작위 모둠 뽑기 도구를 HTML 한 장으로 만들어 줘.\n- 학생 수(예: 28)와 모둠 인원(3·4·5명 큰 버튼)을 고르면 번호로 모둠을 나눠 줘\n- '1모둠: 3, 17, 22, 9번' 형태, 프로젝터용 큰 글씨, 다시 섞기 버튼\n- 결석한 번호를 빼는 칸(예: 5, 12)\n- 남는 학생은 앞 모둠부터 한 명씩 더하기\n- 학생 이름은 쓰지 않고 번호만, 파일 하나로";
+function neisBytes(t) { var b = 0; t = String(t || "").replace(/\r\n/g, "\n"); for (var ch of t) { var c = ch.codePointAt(0); b += ch === "\n" ? 2 : c <= 0x7F ? 1 : c <= 0x7FF ? 2 : c <= 0xFFFF ? 3 : 4; } return b; }
+function bytesDemo() {
+  return '<div data-bytes>' +
+    '<div class="seg">' + chips("bt", ["교과세특 1500", "행동특성 900", "진로 1500"], false, "교과세특 1500") + '</div>' +
+    '<textarea class="in" data-bytes-in placeholder="여기에 글을 붙여 넣어 보세요. (학생 이름은 빼고)">판 구조론 수업에서 대서양 중앙 해령의 고지자기 줄무늬 자료를 분석하여 해저 확장의 증거를 설명함.</textarea>' +
+    '<div class="meter"><span data-bytes-bar style="width:0"></span></div><p data-bytes-out class="small"></p></div>';
+}
+function updBytes(root) {
+  var t = $("[data-bytes-in]", root).value, b = neisBytes(t), n = Array.from(t.replace(/\n/g, "")).length;
+  var sel = chipVals(root, "bt")[0] || "교과세특 1500", max = +sel.split(" ")[1];
+  var pct = Math.min(100, Math.round(b / max * 100));
+  $("[data-bytes-bar]", root).style.width = pct + "%";
+  $(".meter", root).classList.toggle("over", b > max);
+  $("[data-bytes-out]", root).innerHTML = "글자 <b>" + n + "</b>자 · <b class=\"" + (b > max ? "bad" : "ok") + "\">" + b + "</b> / " + max + " 바이트 (" + Math.round(b / max * 100) + "%)" + (b > max ? " · <b class=\"bad\">" + (b - max) + "바이트 넘음</b>" : "");
+}
+function groupDemo() {
+  return '<div data-group>' +
+    '<label class="f">학생 수</label>' + chips("gn", ["24", "26", "28", "30"], false, "28") +
+    '<label class="f">모둠 인원</label>' + chips("gs", ["3명", "4명", "5명"], false, "4명") +
+    '<label class="f">결석 번호 (쉼표로)</label><input class="in" data-group-abs placeholder="예: 5, 12">' +
+    '<p style="margin-top:10px"><button class="btn pri" type="button" data-group-go>모둠 뽑기</button></p><div class="groups" data-group-out></div></div>';
+}
+function runGroup(root) {
+  var n = +(chipVals(root, "gn")[0] || 28), size = parseInt(chipVals(root, "gs")[0] || "4", 10);
+  var abs = {}; $("[data-group-abs]", root).value.split(/[,\s]+/).forEach(function (x) { if (x) abs[+x] = 1; });
+  var a = []; for (var i = 1; i <= n; i++) if (!abs[i]) a.push(i);
+  for (var k = a.length - 1; k > 0; k--) { var r = Math.floor(Math.random() * (k + 1)), t = a[k]; a[k] = a[r]; a[r] = t; }
+  var g = Math.max(1, Math.floor(a.length / size)), out = [];
+  for (var j = 0; j < g; j++) out.push(a.slice(j * size, j * size + size));
+  a.slice(g * size).forEach(function (x, idx) { out[idx % g].push(x); });
+  $("[data-group-out]", root).innerHTML = out.map(function (m, idx) { return "<div><b>" + (idx + 1) + "모둠</b><br>" + m.sort(function (p, q) { return p - q; }).join(", ") + "번</div>"; }).join("");
+}
+
+/* ---------------- 초보자 실습 5: 시트 웹앱 (업무 = 연수 출석 / 수업 = 출구 카드) ---------------- */
+var WEBAPP = {
+  "업무: 연수 출석": { title: "연수 출석", sheet: "출석", headers: ["시각", "이름", "부서", "한마디"], who: "이름", whoErr: "이름을 적어 주세요.",
+    pickLabel: "부서", picks: ["교무", "연구", "학생", "교과", "행정"], memo: "한마디 (선택)", go: "출석하기", done: "출석 완료! 지금까지 ' + n + '명이 출석했어요." },
+  "수업: 출구 카드": { title: "오늘의 출구 카드", sheet: "출구카드", headers: ["시각", "번호", "이해 정도", "한 줄"], who: "번호 (이름 말고 번호만)", whoErr: "번호를 적어 주세요.",
+    pickLabel: "오늘 내용, 어땠나요?", picks: ["잘 알겠어요", "조금 헷갈려요", "다시 설명해 주세요"], memo: "오늘 배운 것 한 줄, 또는 궁금한 것", go: "보내기", done: "보냈어요! 지금까지 ' + n + '명이 냈어요." }
+};
+function gsCode(c) {
+  return [
+    "// ▼ 여기 두 줄만 바꾸면 다른 용도로 쓸 수 있어요",
+    "const SHEET_NAME = '" + c.sheet + "';",
+    "const HEADERS = " + JSON.stringify(c.headers).replace(/"/g, "'").replace(/,/g, ", ") + ";",
+    "",
+    "function doGet() {",
+    "  return HtmlService.createHtmlOutputFromFile('index')",
+    "    .setTitle('" + c.title + "')",
+    "    .addMetaTag('viewport', 'width=device-width, initial-scale=1');",
+    "}",
+    "",
+    "// 화면에서 보낸 내용을 시트에 한 줄 더하고, 지금까지 몇 줄인지 돌려줘요",
+    "function save(form) {",
+    "  const who = clean_(form.who);",
+    "  if (!who) throw new Error('" + c.whoErr + "');",
+    "  const lock = LockService.getScriptLock();   // 여러 명이 동시에 눌러도 줄이 꼬이지 않게",
+    "  lock.waitLock(10000);",
+    "  try {",
+    "    const ss = SpreadsheetApp.getActiveSpreadsheet();",
+    "    const sh = ss.getSheetByName(SHEET_NAME) || ss.insertSheet(SHEET_NAME);",
+    "    if (sh.getLastRow() === 0) sh.appendRow(HEADERS);",
+    "    sh.appendRow([new Date(), who, clean_(form.pick), clean_(form.memo)]);",
+    "    return sh.getLastRow() - 1;",
+    "  } finally {",
+    "    lock.releaseLock();",
+    "  }",
+    "}",
+    "",
+    "// 글자를 200자로 자르고, =·+·-·@ 로 시작하면 수식이 아니라 글자로 저장",
+    "function clean_(v) {",
+    "  const s = String(v == null ? '' : v).trim().slice(0, 200);",
+    "  return /^[=+\\-@]/.test(s) ? \"'\" + s : s;",
+    "}"
+  ].join("\n");
+}
+function htmlCode(c) {
+  return [
+    "<!DOCTYPE html>",
+    "<html>",
+    "<head>",
+    "<base target=\"_top\">",
+    "<meta charset=\"utf-8\">",
+    "<style>",
+    "  body{font-family:sans-serif;max-width:440px;margin:24px auto;padding:0 16px;line-height:1.5}",
+    "  input,textarea,.go{width:100%;box-sizing:border-box;font-size:18px;padding:12px;margin:6px 0;border:1px solid #ccc;border-radius:10px}",
+    "  .go{background:#2563eb;color:#fff;border:0;font-weight:700}",
+    "  .chips button{font-size:17px;padding:10px 14px;margin:4px;border:1px solid #ccc;border-radius:999px;background:#fff}",
+    "  .chips button.on{background:#2563eb;color:#fff;border-color:#2563eb}",
+    "  #msg{font-weight:700}",
+    "</style>",
+    "</head>",
+    "<body>",
+    "<h2>" + c.title + "</h2>",
+    "<input id=\"who\" placeholder=\"" + c.who + "\">",
+    "<p>" + c.pickLabel + "</p>",
+    "<div class=\"chips\" id=\"chips\"></div>",
+    "<textarea id=\"memo\" rows=\"3\" placeholder=\"" + c.memo + "\"></textarea>",
+    "<button class=\"go\" id=\"go\">" + c.go + "</button>",
+    "<p id=\"msg\"></p>",
+    "<script>",
+    "  const CHOICES = " + JSON.stringify(c.picks).replace(/"/g, "'").replace(/,/g, ", ") + ";",
+    "  let pick = '';",
+    "  const box = document.getElementById('chips');",
+    "  CHOICES.forEach(function (c) {",
+    "    const b = document.createElement('button');",
+    "    b.type = 'button';",
+    "    b.textContent = c;",
+    "    b.onclick = function () {",
+    "      pick = c;",
+    "      box.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === b); });",
+    "    };",
+    "    box.appendChild(b);",
+    "  });",
+    "  document.getElementById('go').onclick = function () {",
+    "    const go = this, msg = document.getElementById('msg');",
+    "    go.disabled = true;",
+    "    msg.textContent = '보내는 중...';",
+    "    google.script.run",
+    "      .withSuccessHandler(function (n) {",
+    "        msg.textContent = '" + c.done + "';",
+    "        document.getElementById('memo').value = '';",
+    "        go.disabled = false;",
+    "      })",
+    "      .withFailureHandler(function (e) {",
+    "        msg.textContent = '안 됐어요: ' + e.message;",
+    "        go.disabled = false;",
+    "      })",
+    "      .save({ who: document.getElementById('who').value, pick: pick, memo: document.getElementById('memo').value });",
+    "  };",
+    SC,
+    "</body>",
+    "</html>"
+  ].join("\n");
+}
+function webappHtml() {
+  var keys = Object.keys(WEBAPP);
+  return '<div data-webapp>' + chips("wa", keys, false, keys[0]) + '<div data-webapp-out></div></div>';
+}
+function renderWebapp(root) {
+  var k = chipVals(root, "wa")[0] || Object.keys(WEBAPP)[0], c = WEBAPP[k];
+  $("[data-webapp-out]", root).innerHTML = codeBlock(gsCode(c), "① Code.gs (원래 있던 내용을 지우고 붙여 넣기)") + codeBlock(htmlCode(c), "② index (왼쪽 + → HTML → 이름을 index로)");
+}
+
+/* ---------------- 초보자 실습 6: 안전 O/X ---------------- */
+var SAFE = [
+  { q: "학생 소감문을 이름·학번까지 그대로 AI 채팅에 붙여 넣어도 된다.", o: ["O", "X"], a: 1, w: "<b>X.</b> 이름·학번은 지우거나 '학생A', '3번'으로 바꿔서 넣습니다. 생기부 자동 생성기도 학생 정보 없이 소감문만 다루게 만들었습니다." },
+  { q: "시트 공유를 '링크가 있는 모든 사용자 - 편집자'로 두면 편하고 안전하다.", o: ["O", "X"], a: 1, w: "<b>X.</b> 링크만 알면 누구나 고치고 지울 수 있습니다. 웹앱은 '실행: 나'로 배포하면 시트를 공유하지 않아도 입력이 쌓입니다. 실제로 연수 등록부 시트가 이렇게 열려 있던 것을 나중에 발견했습니다." },
+  { q: "관리 화면 주소(?p=admin)는 아무도 모르니 비밀번호가 없어도 된다.", o: ["O", "X"], a: 1, w: "<b>X.</b> 주소는 메신저로 퍼집니다. 관리 화면에는 비밀번호나 구글 계정 확인을 꼭 붙입니다." },
+  { q: "코드를 고친 뒤 '새 배포'를 누르면 웹앱 주소가 바뀌어 QR을 다시 뽑아야 할 수 있다.", o: ["O", "X"], a: 0, w: "<b>O.</b> 같은 주소를 유지하려면 '배포 관리 → 연필 → 버전: 새 버전'으로 올립니다. 주소가 바뀌면 붙여 둔 QR이 모두 옛 앱을 가리킵니다." },
+  { q: "AI 서비스 열쇠(API 키)를 HTML 화면 코드 안에 적어 두면 학생들은 볼 수 없다.", o: ["O", "X"], a: 1, w: "<b>X.</b> 화면 코드는 누구나 '페이지 소스 보기'로 봅니다. 열쇠는 앱스스크립트 '프로젝트 설정 → 스크립트 속성'에만 넣습니다." },
+  { q: "무료 도구도 하루 한도(메일 발송 수, 실행 시간 등)가 있으니 큰 행사 전에 미리 시험한다.", o: ["O", "X"], a: 0, w: "<b>O.</b> 전교생이 한꺼번에 쓰는 날(예: 야자 도장 시간)에 처음 시험하면 늦습니다. 소수로 먼저 돌려 봅니다." }
+];
+
+/* ---------------- 초보자 실습 7: 내 업무 찾기 ---------------- */
+function findHtml() {
+  var qs = [["f1", "매주 똑같이 반복하는 일은? (예: 연수 출석 명단 정리, 수행평가 제출 확인)"], ["f2", "사람들에게 무언가를 받아 모으는 일은? (예: 영수증, 동의서, 출구 카드)"], ["f3", "수업에서 매번 손으로 하는 일은? (예: 모둠 편성, 발표 순서, 형성평가 집계)"]];
+  return qs.map(function (q) { return '<label class="f">' + esc(q[1]) + '</label><textarea class="in" data-save="' + q[0] + '" rows="2"></textarea>'; }).join("") +
+    '<p class="small muted">이 메모는 이 기기 브라우저에만 저장돼요. 하나를 골라 2단계 \'주문서 만들기 도우미\'에 넣어 보세요.</p>';
+}
+
+/* ---------------- 중급자 실습 2: 방식 고르기 ---------------- */
+var M = ["앱스스크립트", "HTML 한 장", "정적 사이트", "Next.js + Supabase", "서버·예약 작업"];
+var METHOD = [
+  { q: "교내 연수 때 선생님 40명에게 서명을 받고, 연수마다 A4 등록부를 인쇄한다.", o: M, a: 0, w: "<b>앱스스크립트.</b> 사용자 수십 명, 결과가 시트·인쇄물. 실제 '교내 연수 서명 등록부'가 이 방식입니다." },
+  { q: "단원별 수업 자료와 시뮬레이션 40여 쪽. 저장할 학생 데이터는 없다.", o: M, a: 2, w: "<b>정적 사이트.</b> 보여 주기만 하고 쪽이 많으면 GitHub Pages(필요하면 Astro). 과학 수업 허브 44단원이 이 방식입니다." },
+  { q: "소감문을 붙여 넣으면 나이스 바이트를 세고 세특 초안을 만들어 주는 도구.", o: M, a: 1, w: "<b>HTML 한 장.</b> 서버도 데이터베이스도 필요 없습니다. 생기부 자동 생성기는 지금도 파일 하나입니다." },
+  { q: "전교생이 저녁 같은 시각에 한꺼번에 QR 도장을 찍고, 학년별 교사 권한이 따로 있다.", o: M, a: 3, w: "<b>Next.js + Supabase.</b> 동시 접속이 몰리고 로그인·권한이 필요하면 새 방식. 야자 도장판을 운영 중에 옮겼습니다." },
+  { q: "매일 새벽 외부 사이트에서 자료를 모아 정리하고, 끝나면 휴대폰으로 알림을 보낸다.", o: M, a: 4, w: "<b>서버·예약 작업.</b> 오래 도는 수집·봇은 서버(또는 짧으면 GitHub Actions·앱스스크립트 트리거). 화면만 따로 만듭니다." },
+  { q: "영수증 사진을 받아 드라이브에 모으고, 담당자에게 메일로 알린다(교사 60명).", o: M, a: 0, w: "<b>앱스스크립트.</b> 드라이브·지메일 연동이 핵심이면 구글 안에서 끝내는 게 가장 쉽고 무료입니다. '연구부 영수증 제출'이 이 방식입니다." }
+];
+
+/* ---------------- 중급자 실습 3: CLAUDE.md 만들기 ---------------- */
+function claudeHtml() {
+  return '<div data-claude>' +
+    '<label class="f">앱 이름</label><input class="in" data-k="name" placeholder="예: 2학년 수행평가 제출 확인">' +
+    '<label class="f">한 줄 설명 (누가, 무엇을)</label><input class="in" data-k="desc" placeholder="예: 담임이 반별 미제출 학생 번호를 한눈에 보는 화면">' +
+    '<label class="f">방식</label>' + chips("cm-kind", ["앱스스크립트", "HTML 한 장", "정적 사이트(GitHub Pages)", "Next.js + Supabase + Vercel"], false, "앱스스크립트") +
+    '<label class="f">AI에게 꼭 지키게 할 것</label>' + chips("cm-rule", ["학생 개인정보는 저장소에 넣지 않기", "비밀 값(열쇠·비밀번호)은 코드에 쓰지 않기", "시트의 열 순서·탭 이름 바꾸지 않기", "화면은 큰 버튼, 드롭다운 피하기", "답은 쉬운 한국어로"], true, ["학생 개인정보는 저장소에 넣지 않기", "비밀 값(열쇠·비밀번호)은 코드에 쓰지 않기", "답은 쉬운 한국어로"]) +
+    '<label class="f">배포 방법</label>' + chips("cm-dep", ["clasp push 후 같은 배포 ID로 새 버전", "git push 하면 GitHub Pages 자동", "npx vercel deploy --prod"], false, "clasp push 후 같은 배포 ID로 새 버전") +
+    '<p style="margin-top:12px"><button class="btn pri" type="button" data-make-claude>CLAUDE.md 만들기</button> <button class="btn" type="button" data-copy-claude>복사</button></p>' +
+    '<div class="out" data-claude-out>칸을 채우고 \'CLAUDE.md 만들기\'를 누르세요.</div></div>';
+}
+function buildClaude(root) {
+  function v(k) { return $('[data-k="' + k + '"]', root).value.trim(); }
+  var kind = chipVals(root, "cm-kind")[0] || "", dep = chipVals(root, "cm-dep")[0] || "", rules = chipVals(root, "cm-rule");
+  return [
+    "# " + (v("name") || "앱 이름"), "",
+    (v("desc") || "누가 무엇을 하는 앱인지 한 줄로."), "",
+    "## 방식", "- " + kind, "",
+    "## 작업 순서 (매번)",
+    "1. 시작 전 `git pull --rebase`",
+    "2. 고치기 전에 무엇을 바꿀지 3줄로 먼저 말하고 시작",
+    "3. 고친 뒤 직접 확인한 방법(연 화면, 넣어 본 값, 나온 결과)을 보고",
+    "4. 커밋·푸시하고 `문서/작업일지.md`에 날짜와 한 단락(무엇을, 왜, 확인 방법)",
+    "5. 배포: " + dep, "",
+    "## 꼭 지킬 것",
+    rules.map(function (r) { return "- " + r; }).join("\n") || "- (규칙)",
+    "- 지우기·남에게 보내기·돈이 드는 일·비밀번호가 필요한 일은 하기 전에 물어보기",
+    "- 확실하지 않으면 추측하지 말고 '모름'이라고 쓰기", "",
+    "## 검수",
+    "- 여러 파일을 고쳤거나 권한·개인정보가 걸리면, 다른 회사 AI(예: 코덱스 읽기 전용)에게 검사받고 통과해야 배포"
+  ].join("\n");
+}
+
+/* ---------------- 중급자 실습 5: 검수 지시문 + 버그 찾기 ---------------- */
+var P_REVIEW = "너는 깐깐한 검수자야. 파일은 절대 고치지 말고 읽기만 해.\n`git diff main...HEAD` 의 변경을 검수해 줘.\n\n볼 것:\nA. 이번 변경과 그로 인해 생긴 문제 (판정에 반영)\nB. 원래 코드에 있던 문제 (판정과 별도 목록)\n\n특히: 학생 개인정보가 화면·로그·저장소에 새는지, 비밀 값이 코드에 있는지, 권한 없는 사람이 남의 데이터를 읽거나 고칠 수 있는지, 시트 열 순서를 바꿨는지.\n\n각 문제마다 심각도(높음/중간/낮음), 파일:줄, 근거, 고칠 방법을 한국어로.\n확실히 문제없다고 말할 수 없으면 불통과로 해.\n마지막 줄은 반드시 `판정: 통과` 또는 `판정: 불통과`.";
+var BUGS = [
+  { q: "Next.js 화면 코드에 이렇게 적혀 있다.\nconst supabase = createClient(URL, \"service_role 키 eyJhbGci...\")", o: ["문제없음: 키가 길어서 못 외움", "높음: 모든 권한 열쇠가 누구나 보는 화면 코드에 있음", "낮음: 변수 이름만 바꾸면 됨"], a: 1, w: "service_role 키는 모든 권한(RLS 무시) 열쇠입니다. 화면 코드에는 공개(anon) 키만, service_role은 Vercel 환경 변수와 서버 코드에만. 이미 올라갔다면 키를 새로 발급해 바꿉니다." },
+  { q: "Supabase에 학생 표를 만들었다.\ncreate table yaja.students (id int, name text, grade int);\n(그 뒤 다른 설정 없음)", o: ["문제없음: 로그인한 사람만 앱을 씀", "높음: RLS(행 권한)를 켜지 않아 공개 키로 누구나 읽을 수 있음", "중간: 열 이름이 영어라서"], a: 1, w: "표를 만들 때마다 `alter table ... enable row level security;` 후 필요한 줄만 열어 줍니다. 배포 전에 로그아웃 상태로 직접 읽어 보는 시험을 합니다." },
+  { q: "앱스스크립트 웹앱의 doGet:\nif (e.parameter.p === 'admin') return 관리화면();  // 학생 명단 수정·삭제 가능", o: ["높음: 주소만 알면 누구나 관리 화면에 들어옴", "문제없음: 주소를 알려 주지 않으면 됨", "낮음: 화면 글씨만 고치면 됨"], a: 0, w: "관리 화면은 비밀번호(해시 비교)나 Session.getActiveUser() 이메일 허용 명단으로 막습니다. 실제 연수 등록부 첫 판에서 검수로 나온 지적입니다." }
+];
+
+/* ---------------- 중급자 실습 6: 전환 체크리스트 ---------------- */
+var MIGRATE = [
+  "새 앱을 옛 앱 옆에 따로 띄워 가짜 자료로 시험했다 (옛 앱은 그대로 운영)",
+  "실제 데이터를 넣기 전에 백업(매일 시트, 매주 통째로)을 먼저 켰다",
+  "표마다 RLS를 켜고, 로그아웃·학생·다른 학년 교사 계정으로 남의 데이터가 안 보이는지 직접 시험했다",
+  "비밀 값은 환경 변수·스크립트 속성에만 있고 저장소에는 없다",
+  "다른 회사 AI 검수 통과 + 빌드·휴대폰 실제 접속 확인",
+  "바꾸는 시각을 쓰는 사람이 적은 때로 잡았다 (예: 야자 도장 시간은 피해서)",
+  "바꾸기 직전 옛 데이터를 옮기고 숫자(명단 수, 기록 수)를 대조했다",
+  "옛 주소에는 '새 주소로 옮겼어요' 안내를 띄우고, QR을 새로 인쇄했다",
+  "쓰는 사람에게 바뀌는 점(주소, 로그인 방법)을 미리 짧게 알렸다",
+  "옛 앱은 지우지 않고, 새 앱이 안정될 때까지 되돌리기용으로 둔다",
+  "내 앱 주소 모음(대시보드)에 새 주소를 같은 날 반영했다"
+];
+function checklistHtml(id, items) {
+  var saved = store.get("chk-" + id, {});
+  return '<div data-check="' + id + '">' + items.map(function (t, i) {
+    return '<label class="chk"><input type="checkbox" data-i="' + i + '"' + (saved[i] ? " checked" : "") + '><span>' + esc(t) + '</span></label>';
+  }).join("") + '<p class="score" data-check-score></p></div>';
+}
+function updCheck(root) {
+  var id = root.getAttribute("data-check"), s = {}, n = 0, all = $$("input", root);
+  all.forEach(function (c) { if (c.checked) { s[c.getAttribute("data-i")] = 1; n++; } });
+  store.set("chk-" + id, s);
+  $("[data-check-score]", root).textContent = n + " / " + all.length + " 완료" + (n === all.length ? " · 바꿔 달 준비 끝" : "");
+}
+
+/* ---------------- 중급자 실습 7: 내 앱 지도 ---------------- */
+function mapHtml() {
+  return '<div data-map>' +
+    '<label class="f">앱 이름</label><input class="in" data-m="name" placeholder="예: 수행평가 제출 확인">' +
+    '<label class="f">방식</label>' + chips("mp-kind", ["앱스스크립트", "HTML 한 장", "정적 사이트", "Next.js + Supabase", "서버"], false, "앱스스크립트") +
+    '<label class="f">데이터는 어디에?</label>' + chips("mp-data", ["구글 시트", "Supabase", "없음"], false, "구글 시트") +
+    '<label class="f">백업</label>' + chips("mp-bk", ["있음", "없음"], false, "없음") +
+    '<p style="margin-top:10px"><button class="btn pri" type="button" data-map-add>목록에 더하기</button> <button class="btn" type="button" data-map-copy>표로 복사</button></p>' +
+    '<div class="rows" data-map-rows></div></div>';
+}
+function renderMap(root) {
+  var rows = store.get("map", []);
+  $("[data-map-rows]", root).innerHTML = rows.length ? rows.map(function (r, i) {
+    return '<div class="row"><span><b>' + esc(r.name) + '</b> · ' + esc(r.kind) + ' · 데이터: ' + esc(r.data) + ' · 백업: <span class="' + (r.bk === "있음" ? "ok" : "bad") + '">' + esc(r.bk) + '</span></span><button class="del" type="button" data-map-del="' + i + '" aria-label="' + esc(r.name) + ' 지우기">지우기</button></div>';
+  }).join("") : '<p class="small muted">아직 없어요. 지금 운영 중인 앱을 하나씩 더해 보세요. 백업이 \'없음\'인 앱이 오늘의 숙제입니다.</p>';
+}
+
+/* ================= 강의 단계 데이터 ================= */
+var COLORS = ["#4f46e5", "#0ea5e9", "#10b981", "#94a3b8", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"];
+var TRACKS = {
+  beginner: {
+    title: "초보자 2시간: 오늘 하나 만들어 간다",
+    lead: "대상: AI 채팅은 써 봤지만 코딩은 처음인 선생님. 끝날 때 각자 업무용이나 수업용 도구 하나를 링크·QR로 보낼 수 있게 합니다. 설치는 없습니다.",
+    pills: ["설치 없음", "업무 + 수업 예제", "결과물 2개"],
+    steps: [
+      { min: 10, title: "여는 시연: 코딩 몰라도 여기까지 왔다",
+        goal: "겁을 없애고 \"나도 하겠다\"는 마음부터 만든다.",
+        say: ["\"저는 코드를 외워서 쓴 적이 없습니다. 대신 AI에게 학교에서 필요한 것을 정확히 말했습니다.\"", "\"오늘 2시간 뒤에는 여러분 휴대폰으로 동료가 출석하거나, 학생이 출구 카드를 내는 앱이 생깁니다.\""],
+        do: ["내 앱 주소 모음(대시보드)을 띄우고 30초씩: 연수 서명 등록부, 연구부 영수증 제출, 생기부 자동 생성기, 과학 수업 허브", "실습 5 완성본 QR을 띄워 참가자가 직접 출석해 보게 하고, 시트에 줄이 바로 생기는 것을 보여 준다", "오늘의 약속 3가지를 함께 읽는다"],
+        links: [["내 앱 주소 모음", DASH], ["생기부 자동 생성기", "https://ungcheon-tools.github.io/saenggibu/"], ["과학 수업 허브", GH + "science-teacher-hub/"], ["학교 서가 둘러보기(가짜 자료)", GH + "seoga-template/"]],
+        lab: function () { return lab("오늘의 약속 3가지", PROMISE, "함께 읽기"); } },
+      { min: 15, title: "AI에게 '주문서' 쓰기",
+        goal: "코딩 대신 말로 설계하는 법. 주문서 5칸(누가, 입력, 결과, 형태, 꼭 지킬 것)을 익힌다.",
+        say: ["\"AI는 똑똑한 신규 선생님입니다. '출석 앱 만들어 줘'라고만 하면 신규 선생님도 뭘 만들지 모릅니다.\"", "\"한 번에 다 시키지 마세요. 가장 작게 돌아가는 것부터, 그다음 하나씩 더합니다.\""],
+        do: ["같은 요청을 대충 쓴 것과 주문서로 쓴 것을 AI에 각각 넣고 결과를 나란히 띄워 비교한다", "주문서 5칸을 설명하고, 참가자가 도우미로 자기 주문서를 하나 만든다", "업무 예(연수 출석)와 수업 예(모둠 편성, 세특)를 하나씩 보여 준다"],
+        lab: function () { return lab("A. 대충 쓴 주문을 주문서로 바꾸기", '<p class="small muted">먼저 각자 고쳐 써 보고, 버튼을 눌러 비교합니다.</p>' + badGoodHtml()) + lab("B. 주문서 만들기 도우미", orderHtml("o1")); } },
+      { min: 30, title: "첫 도구: HTML 한 장 (업무 · 수업 중 고르기)",
+        goal: "설치 없이 AI 채팅만으로 쓸 수 있는 도구 하나를 완성하고, \"이것도 해 줘\"로 세 번 키워 본다.",
+        say: ["\"생기부 자동 생성기의 바이트 세기도 이 원리입니다. 파일 하나라 서버도 돈도 필요 없습니다.\"", "\"AI가 준 코드를 이해할 필요는 없습니다. 눌러 보고, 이상하면 이상하다고 말하면 됩니다.\""],
+        do: ["아래 주문서를 AI 채팅(클로드·ChatGPT·제미나이)에 붙여 넣는다", "AI가 미리보기를 보여 주면(클로드 아티팩트, 제미나이 캔버스) 그 자리에서 써 본다", "미리보기가 없으면 코드를 메모장에 붙여 '도구.html'로 저장하고 더블클릭", "바꿔 보기 3번을 이어서 시킨다. 오류가 나면 화면 그대로 붙여 넣기"],
+        lab: function () {
+          return lab("업무용: 나이스 바이트 계산기", '<p class="small muted">완성하면 이렇게 됩니다(직접 써 보세요).</p>' + bytesDemo() + reveal("주문서 보기", codeBlock(P_BYTES)) +
+            '<h4>바꿔 보기</h4><ul class="tight"><li>"결과 아래에 복사 버튼을 달아 줘"</li><li>"목표의 95%~100% 사이면 초록, 넘으면 빨강으로"</li><li>"자율·동아리·진로 목표 버튼도 더해 줘"</li></ul>', "업무") +
+            lab("수업용: 무작위 모둠 뽑기", '<p class="small muted">이름 없이 번호만 씁니다.</p>' + groupDemo() + reveal("주문서 보기", codeBlock(P_GROUP)) +
+            '<h4>바꿔 보기</h4><ul class="tight"><li>"모둠마다 역할(기록·발표·자료·시간)을 무작위로 붙여 줘"</li><li>"발표 순서도 뽑아 줘"</li><li>"지난번과 같은 짝이 안 되게 해 줘"</li></ul>', "수업");
+        } },
+      { min: 10, title: "쉬는 시간", brk: true,
+        goal: "쉬는 동안 구글 계정 로그인을 확인하고, 빈 구글 시트를 하나 만들어 둔다.",
+        do: ["학교 계정과 개인 계정이 섞여 있으면 크롬 프로필을 나눠 두면 덜 헷갈린다"] },
+      { min: 35, title: "시트와 이어진 웹앱: 연수 출석 · 수업 출구 카드",
+        goal: "휴대폰으로 낸 내용이 구글 시트에 쌓이는 웹앱을 배포하고 QR로 나눈다.",
+        say: ["\"영수증 제출, 연수 서명 등록부, 이수증 제출 모두 이 구조입니다. 화면 하나 + 시트 하나.\"", "\"'실행: 나'로 배포하면 시트를 아무에게도 공유하지 않아도 입력이 쌓입니다.\""],
+        do: ["구글 시트 새로 만들기 → 이름 '연수 출석'(또는 '출구 카드')", "메뉴 확장 프로그램 → Apps Script", "Code.gs 내용을 지우고 아래 ① 붙여 넣기", "왼쪽 파일 옆 + → HTML → 이름 index → ② 붙여 넣기 → 저장(Ctrl+S)", "배포 → 새 배포 → 톱니 → 웹 앱 → 실행: 나 / 액세스: 학교 계정끼리면 '조직 내 모든 사용자', 학생 개인 기기면 '모든 사용자' → 배포", "권한 검토 → 내 계정 → '확인되지 않은 앱'이 나오면 고급 → (안전하지 않음)으로 이동 → 허용 (내가 만든 앱이라 괜찮음)", "웹 앱 주소 복사 → 휴대폰으로 열어 한 번 내 보고 → 시트에 줄이 생겼는지 확인 → 크롬 '공유 → QR 코드 만들기'로 QR"],
+        lab: function () {
+          return lab("코드 받기: 용도를 고르세요", webappHtml(), "따라 하기") +
+            lab("막히면 여기", '<div class="tbl"><table><tr><th>이렇게 나오면</th><th>이렇게</th></tr>' +
+              '<tr><td>"승인이 필요합니다" / 권한 오류</td><td>6번(권한 검토)을 다시. 학교 계정에서 막히면 관리자 정책일 수 있으니 개인 계정으로 연습</td></tr>' +
+              '<tr><td>"스크립트 함수를 찾을 수 없음: doGet"</td><td>Code.gs 저장이 안 됨. Ctrl+S 후 새 버전으로 배포</td></tr>' +
+              '<tr><td>고쳤는데 화면이 그대로</td><td>"새 배포"가 아니라 배포 관리 → 연필 → 버전: 새 버전 → 배포</td></tr>' +
+              '<tr><td>동료는 안 열림</td><td>배포 관리에서 액세스 범위 확인(조직 내 / 모든 사용자)</td></tr>' +
+              '<tr><td>그 밖의 빨간 글씨</td><td>통째로 복사해 AI에게: "앱스스크립트 웹앱인데 이렇게 나와. 어디를 고칠지 번호로 알려 줘"</td></tr></table></div>', "문제 해결") +
+            lab("바꿔 보기 (AI에게 이어서 시키기)", '<div class="grid2"><div class="box"><h4>업무</h4><ul class="tight"><li>"이미 출석한 이름이면 \'이미 출석했어요\'라고 알려 줘"</li><li>"손가락 서명 칸을 넣고 서명을 시트에 그림으로 저장해 줘" (연수 서명 등록부가 이렇게 커졌어요)</li><li>"연수별 A4 출석부 인쇄 화면을 만들어 줘"</li></ul></div><div class="box"><h4>수업</h4><ul class="tight"><li>"시트 두 번째 탭에 이해 정도별 인원을 세어 차트로"</li><li>"반(1~8반) 버튼을 더해서 반별로 모아 줘"</li><li>"\'다시 설명해 주세요\'가 30%를 넘으면 화면 위에 빨간 표시"</li></ul></div></div>', "확장");
+        } },
+      { min: 12, title: "안전 규칙 6가지 (O/X)",
+        goal: "개인정보·공유 설정·관리 화면·주소·열쇠·한도, 실제로 겪은 실수 6가지를 퀴즈로 익힌다.",
+        say: ["\"오늘 만든 앱도 지금 바로 공유 설정과 액세스 범위를 확인합니다.\""],
+        do: ["퀴즈를 함께 풀고, 틀린 문항은 자기 앱에서 바로 고친다"],
+        lab: function () { return lab("안전 O/X 퀴즈", quiz("safe", SAFE)); } },
+      { min: 8, title: "마무리: 내 학교 일에서 첫 앱 찾기",
+        goal: "다음 주에 만들 것 하나를 정하고 주문서 초안까지 쓰고 나간다.",
+        say: ["\"이번 주에 세 번 이상 손으로 한 일이 있다면, 그게 첫 앱입니다.\"", "\"다음 단계가 궁금하면 중급 과정: 깃허브와 코딩 에이전트로 앱을 오래 운영하는 법.\""],
+        do: ["세 질문에 답을 적고, 하나를 골라 2단계 주문서 도우미로 주문서 만들기", "짝에게 1분 설명: 누가 쓰고, 무엇을 넣고, 무엇이 나오나"],
+        lab: function () { return lab("내 업무 찾기 메모", findHtml()); } }
+    ]
+  },
+  intermediate: {
+    title: "중급자 2시간: 만든 앱을 안심하고 오래 운영한다",
+    lead: "대상: 앱스스크립트나 AI로 학교 도구를 만들어 본 선생님. 코딩 에이전트에게 일을 맡기는 작업 흐름, 다른 AI의 검수, 로그인·권한·백업, 운영 중 옮기기까지 다룹니다.",
+    pills: ["코딩 에이전트", "교차 검수", "백업·권한", "실제 운영 사례"],
+    steps: [
+      { min: 10, title: "1년 동안 앱 15개를 만들며 무너진 것들",
+        goal: "만들기보다 운영이 어렵다는 것에 공감하고, 오늘 갖출 작업 흐름을 그린다.",
+        say: ["\"만드는 데 하루, 고치고 지키는 데 1년이 걸렸습니다.\"", "\"오늘 목표: AI에게 코드를 맡기고도 밤에 편히 자는 법.\""],
+        do: ["실패 사례 5가지를 하나씩 보여 주고 각 사례가 오늘 어느 단계에서 해결되는지 짚는다"],
+        lab: function () {
+          return lab("실패 사례 5가지 → 오늘 배울 해결책", '<div class="tbl"><table><tr><th>겪은 일</th><th>해결 (오늘 단계)</th></tr>' +
+            '<tr><td>고친 앱을 \'새 배포\'로 올렸더니 주소가 바뀌어 붙여 둔 QR이 옛 앱으로 감</td><td>배포 규칙 + 주소는 대시보드 한곳에 (7단계)</td></tr>' +
+            '<tr><td>저녁 도장 시간에 학생이 한꺼번에 몰리자 앱스스크립트가 느려짐</td><td>방식 고르기: 동시 접속이면 Next.js + Supabase (2단계)</td></tr>' +
+            '<tr><td>시트가 \'링크 있는 모든 사용자 - 편집자\'로 열려 있었음</td><td>로그인·권한·비밀 값 (6단계)</td></tr>' +
+            '<tr><td>AI가 기능을 고치다 잘 되던 다른 기능을 깨뜨렸는데 되돌릴 판이 없음</td><td>git + CLAUDE.md + 작업일지 (3단계)</td></tr>' +
+            '<tr><td>만든 AI에게 검사를 시켰더니 자기 실수를 못 봄</td><td>다른 회사 AI 검수 + AI 아닌 확인 (5단계)</td></tr></table></div>', "사례");
+        } },
+      { min: 15, title: "방식 고르기: 모든 앱이 Next.js일 필요는 없다",
+        goal: "앱의 성격으로 방식을 고르는 기준표를 익히고, 학교 사례 6개로 연습한다.",
+        say: ["\"유행 때문에 옮기지 않습니다. 속도·비용·보안·관리 중 하나라도 확실히 좋아질 때만.\"", "\"섞어 써도 됩니다. 화면은 새 방식, 시트는 담임 보기용·백업용으로.\""],
+        do: ["기준표를 설명하고, 퀴즈 6문항을 함께 푼다", "참가자가 자기 앱 하나를 표에 넣어 보고 짝과 비교"],
+        lab: function () {
+          return lab("기준표", '<div class="tbl"><table><tr><th>앱의 성격</th><th>방식</th><th>학교 예</th></tr>' +
+            '<tr><td>시트·드라이브·지메일 연동이 핵심, 사용자 수십 명, 결과가 시트·인쇄물</td><td><b>앱스스크립트</b></td><td>영수증 제출, 연수 서명 등록부</td></tr>' +
+            '<tr><td>HTML 한 장으로 끝나는 도구</td><td><b>HTML 한 장</b></td><td>생기부 자동 생성기, 채점 도우미</td></tr>' +
+            '<tr><td>보여 주기만, 쪽이 많음</td><td><b>정적 사이트</b> (GitHub Pages, Astro)</td><td>과학 수업 허브 44단원</td></tr>' +
+            '<tr><td>동시 접속이 몰림, 로그인·학년별 권한, 속도·디자인 중요</td><td><b>Next.js + Supabase + Vercel</b></td><td>야자 도장판, 도서관 독서 프로그램</td></tr>' +
+            '<tr><td>오래 도는 수집·봇·예약 작업</td><td><b>서버·예약 작업</b></td><td>자료 수집, 정기 알림</td></tr></table></div>', "설명") +
+            lab("이 앱은 어떤 방식?", quiz("method", METHOD));
+        } },
+      { min: 30, title: "코딩 에이전트와 일하는 기본 흐름",
+        goal: "폴더 · git · CLAUDE.md · 작업일지, 4종 세트를 갖추고 한 바퀴 돌려 본다.",
+        say: ["\"채팅 AI는 코드를 '알려' 주고, 코딩 에이전트는 내 폴더에서 직접 '고칩니다'. 그래서 규칙서와 되돌리기가 먼저입니다.\"", "\"지시할 때는 목표, 바꾸면 안 되는 것, 확인 방법을 같이 줍니다. '됐다'는 말 대신 '어떻게 확인했는지'를 받으세요.\""],
+        do: ["4종 세트 설명: 앱 하나 = 폴더 하나 / git·GitHub 비공개 저장소 / CLAUDE.md / 문서/작업일지.md", "한 바퀴 시연: git pull --rebase → 에이전트에게 지시 → 직접 열어 확인 → 커밋·푸시 → 일지 한 단락", "실습 A로 자기 앱의 CLAUDE.md를 만든다", "실습 B: 예제 수업 페이지 폴더에서 에이전트에게 기능 하나를 시키고 GitHub Pages로 올린다"],
+        lab: function () {
+          return lab("A. CLAUDE.md 만들기 도우미", claudeHtml()) +
+            lab("B. 수업 페이지 하나를 에이전트로 만들고 올리기", '<ol class="steps"><li>빈 폴더를 만들고 그 폴더에서 터미널을 연다</li><li>위에서 만든 CLAUDE.md를 폴더에 저장 (방식: 정적 사이트, 배포: GitHub Pages)</li><li><code>claude</code> 실행 후 아래 지시를 붙여 넣는다</li><li>브라우저로 index.html을 직접 열어 확인 → 이상하면 그대로 말하기</li><li>아래 명령으로 저장소를 만들고 Pages를 켠다</li></ol>' +
+              codeBlock("CLAUDE.md를 먼저 읽어 줘.\n지구시스템과학 '판 구조론' 단원의 수업 첫 화면을 index.html 하나로 만들어 줘.\n- 위에서부터: 오늘의 질문 / 오개념 점검 O·X 3문항(누르면 풀이) / 판 경계 3종류 그림 카드 / 출구 질문\n- 휴대폰과 프로젝터 둘 다 보기 좋게, 큰 버튼\n- 바꾸면 안 되는 것: 외부 서버에 학생 입력을 보내지 말 것\n- 끝나면 무엇을 만들었는지, 직접 어떻게 확인했는지 3줄로 보고하고 커밋해 줘", "에이전트에게 줄 첫 지시") +
+              codeBlock("git init\ngit add -A\ngit commit -m \"판 구조론 수업 첫 화면\"\ngh repo create plate-lesson --public --source . --push\ngh api -X POST repos/{owner}/plate-lesson/pages -f \"source[branch]=main\" -f \"source[path]=/\"\n# 1~2분 뒤: https://<내 아이디>.github.io/plate-lesson/", "올리기 (GitHub CLI)") +
+              '<p class="small muted">수업 자료라 공개 저장소로 올립니다. 학생 데이터가 들어가는 앱은 반드시 비공개 저장소.</p>');
+        } },
+      { min: 10, title: "쉬는 시간", brk: true,
+        goal: "쉬는 동안 실습 B의 Pages 주소가 열리는지 휴대폰으로 확인한다.",
+        do: ["안 열리면: 저장소 Settings → Pages에서 상태 확인(처음엔 1~2분 걸림)"] },
+      { min: 20, title: "지휘 · 구현 · 검수: AI끼리 서로 검사시키기",
+        goal: "만든 AI와 다른 회사 AI가 검사하고, 그 사이에 AI 아닌 확인을 넣는 구조를 익힌다.",
+        say: ["\"같은 AI는 자기 실수를 잘 못 봅니다. 클로드가 만들면 코덱스가, 코덱스가 만들면 클로드가 봅니다.\"", "\"최종 기준은 AI의 '통과'가 아니라 내가 직접 열어 본 화면, 대조한 숫자입니다. 애매하면 불통과.\""],
+        do: ["역할 나누기: 지휘(사람 + AI가 작업 지시서), 구현(코딩 에이전트), 검수(다른 회사 AI, 읽기 전용)", "AI 아닌 확인: 빌드·테스트, 배포 주소를 휴대폰으로 열기, 시트 숫자 대조", "범위 나누기: A 이번 변경(판정에 반영) / B 원래 있던 문제(따로 목록). 안 나누면 검수가 끝나지 않는다", "사람에게만 묻는 것: 돈, 비밀번호, 지우기, 남에게 보내기, 되돌릴 수 없는 일", "버그 찾기 3문제를 풀고, 준비한 연습 저장소에 검수 지시문을 직접 돌려 본다"],
+        lab: function () {
+          return lab("A. 검수 지시문 (그대로 복사해 쓰기)", codeBlock(P_REVIEW) + '<p class="small muted">Claude Code 안에서는 <code>/codex:review</code>, 터미널에서는 <code>codex exec -s read-only "위 지시"</code>. 코덱스가 없으면 다른 회사 AI 채팅에 변경 내용을 붙여 넣어도 됩니다.</p>') +
+            lab("B. 검수자가 되어 보기: 이 코드의 문제는?", quiz("bugs", BUGS));
+        } },
+      { min: 20, title: "운영: 로그인 · 권한 · 백업 · 운영 중 옮기기",
+        goal: "학생 데이터를 다루는 앱의 최소 안전장치와, 쓰는 사람이 끊기지 않게 옮기는 순서를 익힌다.",
+        say: ["\"백업은 실제 데이터를 넣기 전에 먼저 만듭니다. 무료 Supabase는 자동 백업이 없습니다.\"", "\"운영 중이라 못 옮긴다는 말은 하지 않습니다. 옆에 띄우고, 조용한 시간에 바꾸고, 숫자를 맞추고, 옛 앱은 남겨 둡니다.\""],
+        do: ["로그인: 교사는 구글 로그인 + 허용 명단, 학생은 학번 + 등록한 기기(+첫 등록 때 담임 확인), 이메일+비밀번호는 피하기", "권한: 표마다 RLS를 켜고 기본은 전부 막힘. 배포 전 로그아웃·다른 학년 계정으로 남의 데이터 열어 보기", "비밀 값: Vercel 환경 변수, GitHub Secrets, 스크립트 속성에만", "백업 2중: 매일 시트로(앱스스크립트 트리거, 일시정지도 막아 줌) + 매주 통째로(db dump, 저장소에 커밋 금지)", "야자 도장판 실제 전환 순서를 체크리스트로 따라가 본다"],
+        lab: function () { return lab("운영 중 옮기기 체크리스트 (야자 도장판 실제 순서)", checklistHtml("migrate", MIGRATE)); } },
+      { min: 10, title: "자동화로 넓히기 + 주소는 한곳에",
+        goal: "반복 클릭·정기 작업까지 AI에게 맡기는 범위와, 앱이 많아질 때 길을 잃지 않는 법.",
+        say: ["\"앱이 열 개가 넘으면 '어디 있더라'가 가장 큰 비용입니다. 주소가 바뀌면 같은 날 대시보드에.\""],
+        do: ["브라우저 에이전트(예: Aside): 로그인된 내 브라우저에서 공문 찾기·자료 내려받기 같은 반복 클릭을 대신. 결재·제출 같은 마지막 단추는 사람이", "정기 작업: 짧으면 앱스스크립트 트리거·GitHub Actions, 길면 서버. 끝나면 휴대폰 알림", "내 앱 주소 모음(대시보드) 시연: 앱별 카드, 시험 중인 새 판 표시, 시트 주소는 암호로 잠금", "실습: 내가 운영하는 앱을 지도로 정리"],
+        links: [["내 앱 주소 모음", DASH]],
+        lab: function () { return lab("내 앱 지도", mapHtml()); } },
+      { min: 5, title: "정리와 숙제",
+        goal: "다음 주까지 내 앱 하나에 4종 세트와 검수 한 번.",
+        say: ["\"만드는 건 AI가, 확인과 책임은 사람이.\""],
+        do: ["숙제 1: 운영 중인 앱 하나를 골라 폴더 · git · CLAUDE.md · 작업일지 갖추기", "숙제 2: 그 앱의 다음 수정에 다른 회사 AI 검수를 한 번 돌리고 결과 공유", "숙제 3: 앱 지도에서 백업 '없음'인 앱 하나에 백업 켜기"] }
+    ]
+  }
+};
+
+/* ---------------- 단계 그리기 ---------------- */
+function fmtClock(m) { return Math.floor(m / 60) + ":" + (m % 60 < 10 ? "0" : "") + (m % 60); }
+function renderTrack(key) {
+  var t = TRACKS[key], acc = 0, total = t.steps.reduce(function (s, x) { return s + x.min; }, 0);
+  var tl = t.steps.map(function (s, i) { return '<span title="' + esc(s.title) + '" style="width:' + (s.min / total * 100) + '%;background:' + (s.brk ? "#cbd5e1" : COLORS[i % COLORS.length]) + '"></span>'; }).join("");
+  var lg = t.steps.map(function (s, i) { return '<span><i style="background:' + (s.brk ? "#cbd5e1" : COLORS[i % COLORS.length]) + '"></i>' + esc(s.title.split(":")[0]) + ' ' + s.min + '분</span>'; }).join("");
+  var html = '<h2>' + esc(t.title) + '</h2><p class="lead">' + esc(t.lead) + '</p><div class="meta">' + t.pills.map(function (p) { return '<span class="pill">' + esc(p) + '</span>'; }).join("") + '<span class="pill ok">총 ' + total + '분</span></div>' +
+    '<div class="timeline">' + tl + '</div><div class="tl-legend">' + lg + '</div>' +
+    '<p class="noprint small muted" style="margin-top:10px">아래 \'강의 시계\'의 시작을 누르면 지금 해야 할 단계가 표시되고 따라 내려갑니다.</p>';
+  t.steps.forEach(function (s, i) {
+    var from = acc; acc += s.min;
+    var color = s.brk ? "#94a3b8" : COLORS[i % COLORS.length];
+    html += '<article class="step" id="' + key + '-' + i + '" data-from="' + from + '" data-to="' + acc + '">' +
+      '<div class="step-h"><div class="clock" style="background:' + color + '">' + fmtClock(from) + '<small>' + s.min + '분</small></div><div><h3>' + (i + 1) + '. ' + esc(s.title) + '</h3><p class="goal">' + esc(s.goal) + '</p></div></div><div class="step-b">';
+    if (s.brk) { html += '<ul class="tight">' + (s.do || []).map(function (d) { return '<li>' + esc(d) + '</li>'; }).join("") + '</ul></div></article>'; return; }
+    html += '<div class="cols"><div class="box"><h4>진행</h4><ol class="steps">' + s.do.map(function (d) { return '<li>' + esc(d) + '</li>'; }).join("") + '</ol></div><div>' +
+      (s.say ? '<div class="box"><h4>강사가 할 말</h4>' + s.say.map(function (x) { return '<div class="say">' + esc(x) + '</div>'; }).join("") + '</div>' : '') +
+      (s.links ? '<div class="box"><h4>띄울 화면</h4><ul class="tight">' + s.links.map(function (l) { return '<li><a href="' + l[1] + '" target="_blank" rel="noopener">' + esc(l[0]) + '</a></li>'; }).join("") + '</ul></div>' : '') +
+      '</div></div>' + (s.lab ? s.lab() : '') + '</div></article>';
+  });
+  var v = $("#v-" + key); v.innerHTML = html;
+  initWidgets(v);
+}
+
+/* ---------------- 자료: 주문서 모음 ---------------- */
+function renderBank() {
+  var bank = [
+    ["주문서 기본 틀", "[무엇]을 만들어 줘.\n- 쓰는 사람: \n- 입력: \n- 결과: \n- 형태: HTML 한 장 / 구글 시트 + 앱스스크립트 웹앱\n- 화면: 휴대폰 우선, 드롭다운 대신 큰 버튼\n- 꼭 지킬 것: 학생 이름 대신 번호, 무료 도구만\n- 나는 코딩을 모르는 교사야. 붙여 넣을 곳과 순서를 번호로 알려 줘."],
+    ["오류가 났을 때", "앱스스크립트 웹앱을 만들고 있어. 아래처럼 오류가 나.\n(오류 화면 글을 통째로 붙여 넣기)\n어디를 어떻게 고칠지, 붙여 넣을 코드 전체와 순서를 번호로 알려 줘. 추측이면 추측이라고 말해 줘."],
+    ["기능 하나 더하기", "지금 잘 돌아가는 코드는 아래와 같아. 다른 기능은 그대로 두고 [더할 기능]만 더해 줘.\n바뀐 부분이 어디인지 먼저 3줄로 알려 주고, 그다음 전체 코드를 줘.\n(지금 코드 붙여 넣기)"],
+    ["수업 자료 페이지", "[과목] [단원] 수업에서 학생이 휴대폰으로 보는 페이지를 HTML 한 장으로 만들어 줘.\n- 오늘의 질문 / 오개념 점검 O·X 3문항(누르면 풀이) / 핵심 그림 / 출구 질문\n- 학생 입력은 어디로도 보내지 않기, 프로젝터에서도 잘 보이게"],
+    ["가정통신문·안내문", "아래 내용을 학부모용 안내문으로 써 줘. A4 한 장, 쉬운 말, 날짜·준비물·문의처는 표로.\n학교 이름과 담당자는 [ ]로 비워 둬.\n(내용)"],
+    ["코딩 에이전트 첫 지시", "CLAUDE.md를 먼저 읽어 줘.\n목표: \n바꾸면 안 되는 것: \n확인 방법: 끝나면 직접 열어 본 화면과 넣어 본 값을 3줄로 보고\n끝나면 커밋하고 작업일지에 한 단락."],
+    ["교차 검수", P_REVIEW]
+  ];
+  $("#promptBank").innerHTML = bank.map(function (b) { return '<div class="card"><b>' + esc(b[0]) + '</b>' + codeBlock(b[1]) + '</div>'; }).join("");
+  initWidgets($("#v-res"));
+}
+
+/* ---------------- 위젯 연결 ---------------- */
+function initWidgets(root) {
+  $$("[data-bytes]", root).forEach(function (b) { updBytes(b); });
+  $$("[data-webapp]", root).forEach(function (w) { renderWebapp(w); });
+  $$("[data-check]", root).forEach(function (c) { updCheck(c); });
+  $$("[data-map]", root).forEach(function (m) { renderMap(m); });
+  $$("[data-save]", root).forEach(function (t) { t.value = store.get("memo-" + t.getAttribute("data-save"), ""); });
+}
+document.addEventListener("click", function (e) {
+  var t = e.target.closest("button, [data-go]"); if (!t) return;
+  if (t.hasAttribute("data-copy")) return copyText(CODES[+t.getAttribute("data-copy")]);
+  if (t.hasAttribute("data-reveal")) { var r = t.parentNode; r.classList.toggle("open"); t.textContent = r.classList.contains("open") ? "접기" : t.getAttribute("data-label"); return; }
+  if (t.hasAttribute("data-go")) return go(t.getAttribute("data-go"));
+  if (t.classList.contains("chip")) {
+    var box = t.parentNode, multi = box.hasAttribute("data-multi");
+    if (multi) t.setAttribute("aria-pressed", t.getAttribute("aria-pressed") === "true" ? "false" : "true");
+    else $$(".chip", box).forEach(function (c) { c.setAttribute("aria-pressed", c === t ? "true" : "false"); });
+    var bw = t.closest("[data-bytes]"); if (bw) updBytes(bw);
+    var ww = t.closest("[data-webapp]"); if (ww) renderWebapp(ww);
+    return;
+  }
+  if (t.classList.contains("opt")) {
+    var q = t.closest(".q"), wrap = t.closest("[data-quiz]");
+    if (q.classList.contains("done")) return;
+    var it = QUIZ[wrap.getAttribute("data-quiz")][+q.getAttribute("data-i")], j = +t.getAttribute("data-j");
+    q.classList.add("done"); q.setAttribute("data-ok", j === it.a ? "1" : "0");
+    t.classList.add(j === it.a ? "right" : "wrong");
+    if (j !== it.a) $$(".opt", q)[it.a].classList.add("right");
+    var done = $$(".q.done", wrap).length, ok = $$('.q[data-ok="1"]', wrap).length, all = $$(".q", wrap).length;
+    $("[data-score]", wrap).textContent = done === all ? "결과: " + all + "문항 중 " + ok + "문항 맞음" : done + " / " + all + " 풀었어요";
+    return;
+  }
+  if (t.hasAttribute("data-make-order")) { var o = t.closest("[data-order]"); $("[data-order-out]", o).textContent = buildOrder(o); return; }
+  if (t.hasAttribute("data-copy-order")) { var o2 = t.closest("[data-order]"); var txt = buildOrder(o2); $("[data-order-out]", o2).textContent = txt; return copyText(txt); }
+  if (t.hasAttribute("data-make-claude")) { var c = t.closest("[data-claude]"); $("[data-claude-out]", c).textContent = buildClaude(c); return; }
+  if (t.hasAttribute("data-copy-claude")) { var c2 = t.closest("[data-claude]"); var md = buildClaude(c2); $("[data-claude-out]", c2).textContent = md; return copyText(md); }
+  if (t.hasAttribute("data-group-go")) return runGroup(t.closest("[data-group]"));
+  if (t.hasAttribute("data-map-add")) {
+    var mp = t.closest("[data-map]"), nm = $('[data-m="name"]', mp).value.trim();
+    if (!nm) { toast("앱 이름을 적어 주세요"); return; }
+    var rows = store.get("map", []);
+    rows.push({ name: nm, kind: chipVals(mp, "mp-kind")[0] || "", data: chipVals(mp, "mp-data")[0] || "", bk: chipVals(mp, "mp-bk")[0] || "없음" });
+    store.set("map", rows); $('[data-m="name"]', mp).value = ""; renderMap(mp); return;
+  }
+  if (t.hasAttribute("data-map-del")) { var mp2 = t.closest("[data-map]"), rs = store.get("map", []); rs.splice(+t.getAttribute("data-map-del"), 1); store.set("map", rs); renderMap(mp2); return; }
+  if (t.hasAttribute("data-map-copy")) {
+    var rr = store.get("map", []); if (!rr.length) { toast("목록이 비어 있어요"); return; }
+    return copyText("앱 이름\t방식\t데이터\t백업\n" + rr.map(function (r) { return [r.name, r.kind, r.data, r.bk].join("\t"); }).join("\n"));
+  }
+});
+document.addEventListener("input", function (e) {
+  var b = e.target.closest("[data-bytes]"); if (b) updBytes(b);
+  if (e.target.hasAttribute("data-save")) store.set("memo-" + e.target.getAttribute("data-save"), e.target.value);
+});
+document.addEventListener("change", function (e) { var c = e.target.closest("[data-check]"); if (c) updCheck(c); });
+
+/* ---------------- 보기 전환 ---------------- */
+var VIEWS = ["overview", "beginner", "intermediate", "res"], cur = "";
+function go(v, noScroll) {
+  if (VIEWS.indexOf(v) < 0) v = "overview";
+  if (location.hash !== "#" + v) history.replaceState(null, "", "#" + v);
+  cur = v;
+  VIEWS.forEach(function (x) { $("#v-" + x).classList.toggle("on", x === v); });
+  $$(".tab").forEach(function (b) { b.setAttribute("aria-selected", b.getAttribute("data-v") === v ? "true" : "false"); });
+  $("#bar").classList.toggle("on", !!TRACKS[v]);
+  if (TRACKS[v]) tick();
+  if (!noScroll) window.scrollTo(0, 0);
+}
+$$(".tab").forEach(function (b) { b.addEventListener("click", function () { go(b.getAttribute("data-v")); }); });
+window.addEventListener("hashchange", function () { go(location.hash.slice(1)); });
+
+/* ---------------- 강의 시계 (과정마다 따로 저장) ---------------- */
+function clk() { return store.get("clock-" + cur, { run: false, start: 0, acc: 0 }); }
+function setClk(c) { store.set("clock-" + cur, c); tick(); }
+function elapsedMin(c) { var ms = c.acc + (c.run ? Date.now() - c.start : 0); return ms / 60000; }
+function hms(sec) { sec = Math.max(0, Math.floor(sec)); var h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s = sec % 60; return h + ":" + (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s; }
+var lastStep = -1;
+function tick() {
+  if (!TRACKS[cur]) return;
+  var c = clk(), m = elapsedMin(c), steps = TRACKS[cur].steps, acc = 0, idx = -1, from = 0, to = 0;
+  for (var i = 0; i < steps.length; i++) { if (m < acc + steps[i].min) { idx = i; from = acc; to = acc + steps[i].min; break; } acc += steps[i].min; }
+  var started = c.run || c.acc > 0;
+  $("#barTime").innerHTML = hms(m * 60) + "<small>/ 2:00:00 진행" + (c.run ? "" : started ? " · 멈춤" : "") + "</small>";
+  $("#barPlay").textContent = c.run ? "멈춤" : started ? "이어서" : "시작";
+  $$("#v-" + cur + " .step").forEach(function (s, i) { s.classList.toggle("now", started && i === idx); });
+  if (!started) { $("#barNow").innerHTML = "<b>시작 전</b>시작을 누르면 지금 단계가 표시돼요"; lastStep = -1; return; }
+  if (idx < 0) { $("#barNow").innerHTML = "<b>강의 끝</b>수고하셨습니다"; return; }
+  var left = (to - m) * 60;
+  $("#barNow").innerHTML = "<b>" + (idx + 1) + ". " + esc(steps[idx].title) + "</b>이 단계 남은 시간 " + hms(left).replace(/^0:/, "") + (left < 120 ? ' · <span class="bad">곧 다음 단계</span>' : "");
+  if (idx !== lastStep && c.run) { lastStep = idx; var el = $("#" + cur + "-" + idx); if (el) el.scrollIntoView({ behavior: "smooth", block: "start" }); }
+}
+function jump(d) {
+  var c = clk(), m = elapsedMin(c), steps = TRACKS[cur].steps, starts = [], acc = 0;
+  steps.forEach(function (s) { starts.push(acc); acc += s.min; });
+  var idx = 0; for (var i = 0; i < starts.length; i++) if (m >= starts[i]) idx = i;
+  var tgt = Math.max(0, Math.min(steps.length - 1, idx + d));
+  if (d < 0 && m - starts[idx] > 0.5) tgt = idx;
+  c.acc = starts[tgt] * 60000; c.start = Date.now(); lastStep = -1;
+  if (!c.run && c.acc === 0) c.acc = 1;
+  setClk(c);
+  var el = $("#" + cur + "-" + tgt); if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+$("#barPlay").addEventListener("click", function () { var c = clk(); if (c.run) { c.acc += Date.now() - c.start; c.run = false; } else { c.start = Date.now(); c.run = true; lastStep = -1; } setClk(c); });
+$("#barNext").addEventListener("click", function () { jump(1); });
+$("#barPrev").addEventListener("click", function () { jump(-1); });
+$("#barReset").addEventListener("click", function () { if (confirm("강의 시계를 처음으로 돌릴까요?")) { lastStep = -1; setClk({ run: false, start: 0, acc: 0 }); window.scrollTo(0, 0); } });
+setInterval(tick, 1000);
+
+/* ---------------- 시작 ---------------- */
+renderTrack("beginner");
+renderTrack("intermediate");
+renderBank();
+initWidgets($("#v-overview"));
+go(location.hash.slice(1) || "overview", true);
+</script>
+</body>
+</html>
