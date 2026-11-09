@@ -6,4 +6,5 @@
   - 초보자: `#beginner`, 중급자: `#intermediate`, 자료·명령어: `#res`
 - 방식: HTML 한 장(빌드 없음) + GitHub Pages. 저장할 데이터 없음. 실습 메모·체크는 그 기기 localStorage(`lec-*`)에만.
 - 고치는 곳: `index.html` 아래 `<script>`의 `TRACKS`(단계·시간·할 말·실습), `WEBAPP`(앱스스크립트 예제 두 가지), `METHOD`·`SAFE`·`BUGS`(퀴즈), `MIGRATE`(체크리스트).
+- 배포: 빌드 없음. `index.html` 을 고쳐 `main` 에 push 하면 GitHub Pages(가지 `main`, 폴더 `/`)가 1~2분 뒤 위 주소에 반영한다.
 - 공개 저장소: 학생 이름, 시트·드라이브 주소, 열쇠·비밀번호, 관리 화면 주소를 넣지 않는다.
